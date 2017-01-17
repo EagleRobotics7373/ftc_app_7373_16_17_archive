@@ -30,10 +30,11 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.teamcode.ER7373.autonomous;
+package org.firstinspires.ftc.teamcode.ER7373.autonomous.FirstQualifierArchive;
 
 import com.qualcomm.ftcrobotcontroller.R;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 
 import org.firstinspires.ftc.robotcore.external.ClassFactory;
@@ -52,7 +53,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Autonomous(name="NLA Vuforia Navigation", group ="Concept")
-//@Disabled
+@Disabled
 public class PushbotVuforiaPositionOp extends LinearOpMode {
 
     public static final String TAG = "Vuforia Sample";

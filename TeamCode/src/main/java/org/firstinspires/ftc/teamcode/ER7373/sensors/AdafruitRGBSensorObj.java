@@ -39,7 +39,7 @@ public class AdafruitRGBSensorObj {
 	//method to initialize the sensor
 	public void initialize(){
 		//initialize new rgb array
-		rgbVal = new int[4];
+		rgbVal = new int[3];
 		//intialize the digital channel for the led
 		cdim.setDigitalChannelMode(led, DigitalChannelController.Mode.OUTPUT);
 		//turn led on needs to be turned off on start
@@ -86,7 +86,7 @@ public class AdafruitRGBSensorObj {
 	//method to return the alpha value
 	public int alpha(){
 		rgbArrayUpdate();
-		return rgbVal[3];
+		return rgb.alpha();
 	}
 
 	//method to return array of rgb values
@@ -102,6 +102,6 @@ public class AdafruitRGBSensorObj {
 		rgbVal[0] = rgb.red();
 		rgbVal[1] = rgb.green();
 		rgbVal[2] = rgb.blue();
-		rgbVal[3] = rgb.alpha();
+		//rgbVal[3] = rgb.alpha();
 	}
 }

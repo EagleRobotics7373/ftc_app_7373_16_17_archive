@@ -29,14 +29,14 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package org.firstinspires.ftc.teamcode.ER11364;
+package org.firstinspires.ftc.teamcode.ER11364.Archive;
 
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.OpMode;
-import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
-
-import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.teamcode.ER7373.mechanics.Mecanum;
 import org.firstinspires.ftc.teamcode.ER7373.mechanics.Motor;
@@ -49,9 +49,9 @@ import org.firstinspires.ftc.teamcode.ER7373.mechanics.Shooter;
  * Teleop program for 11364 for 1st Qualifier
  *
  */
-@TeleOp(name = "11364 Teleop", group = "Concept")
+@Autonomous(name = "11364 Auto", group = "11364")
 @Disabled
-public class Q1Teleop11364 extends OpMode {
+public class Q1Auto11364 extends LinearOpMode {
 
   //create all motor variables for the drive train
   DcMotor leftFront;
@@ -63,22 +63,14 @@ public class Q1Teleop11364 extends OpMode {
   DcMotor shooterM;
 
   //create all motor variables for the intake
-  DcMotor intakel;
-  DcMotor intaker;
-
-  //create ball stop servos
-  Servo stop;
-
-  //create CR servo for intake
-  Servo intakeServo;
-  Servo activeIntakeServo;
+  DcMotor intake;
 
 
 
   private ElapsedTime runtime = new ElapsedTime();
 
   @Override
-  public void init() {
+  public void runOpMode() throws InterruptedException{
     telemetry.addData("Status", "Initialized");
 
     //add all motors to the hardware map
@@ -87,13 +79,7 @@ public class Q1Teleop11364 extends OpMode {
     rightRear = hardwareMap.dcMotor.get("rightrear");
     rightFront = hardwareMap.dcMotor.get("rightfront");
     shooterM = hardwareMap.dcMotor.get("shooter");
-    intakel = hardwareMap.dcMotor.get("intakeleft");
-    intaker = hardwareMap.dcMotor.get("intakeright");
-
-    //add servos to the hardware map
-    stop = hardwareMap.servo.get("servolower");
-    intakeServo = hardwareMap.servo.get("intakeservo");
-    activeIntakeServo = hardwareMap.servo.get("activeintakeservo");
+    intake = hardwareMap.dcMotor.get("intake");
 
 
 
@@ -103,27 +89,14 @@ public class Q1Teleop11364 extends OpMode {
     rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     shooterM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    intakel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    intaker.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-  }
+    intake.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
-  @Override
-  public void init_loop() {
-  }
-
-  @Override
-  public void start() {
-    runtime.reset();
-  }
-
-  @Override
-  public void loop() {
     telemetry.addData("Status", "Run Time: " + runtime.toString());
 
     //instantiate all objects for all systems
     Mecanum mecanum = new Mecanum(leftFront,leftRear, rightFront, rightRear);
 
-    Shooter intake = new Shooter(intakel, intaker);
+    //Shooter intake = new Shooter(intakel, intaker);
 
     Motor shooter = new Motor(shooterM);
 
@@ -131,52 +104,43 @@ public class Q1Teleop11364 extends OpMode {
     //ServoM stopServo = new ServoM(stop);
 
 
-    //run the mecanum wheels
-    mecanum.run(gamepad1.left_stick_y,gamepad1.left_stick_x,gamepad1.right_stick_x);
-
-    //run the shooter .5 rotation down if gamepad 2 a is pressed and .5 rotation up if b is pressed
-    if(gamepad2.a)shooter.runPower((float) -.5);
-    else if(gamepad2.b)shooter.runPower((float).5);
-    else shooter.runPower(0);
-
-    //run the shooter manually using the right joystick on gamepad 2
-    //shooter.runPower(-gamepad2.right_stick_y);
-
-    //run the intake with left joystick on gamepad 2
-    intake.powerRun((float)-.1*gamepad2.left_stick_y);
-
-
-
-    //run the servo for the intake using the dpad
-    if (gamepad2.dpad_down){
-      stop.setPosition((float) 0.1);
-    } else if(gamepad2.dpad_up) stop.setPosition((float) .5);
-
-    //run CR servo constantly
-    intakeServo.setDirection(Servo.Direction.FORWARD);
-    intakeServo.setPosition(1.0);
+    waitForStart();
 
     /**
-     *  run the intake CR servo
-     *  gamepad 2
-     *  Right bumper intakes
-     *  Left Bumper outlets
+     * 1.  Drive forward a set distance
+     * 2.  Shoot a ball
+     * 3.  Reset shooter
+     * 4.  Load new ball
+     * 5.  Shoot ball
+     * 6.  Reset Shooter
      */
-    if(gamepad2.right_bumper){
-      activeIntakeServo.setDirection(Servo.Direction.REVERSE);
-      activeIntakeServo.setPosition(0);
-    } else if(gamepad2.left_bumper){
-      activeIntakeServo.setDirection(Servo.Direction.FORWARD);
-      activeIntakeServo.setPosition(0);
-    } else activeIntakeServo.setPosition(.493);
 
+    mecanum.run((float) -.3, 0, 0);
+    Thread.sleep(800);
+    mecanum.stop();
+    Thread.sleep(1500);
+    shooter.runPower((float) -.5);
+    Thread.sleep(500);
 
+    shooter.runPower((float) 1);
+    Thread.sleep(1000);
+    shooter.runPower((float) 0);
+    Thread.sleep(500);
+   // intake.powerRun((float) .2);
+    Thread.sleep(600);
+   // intake.powerRun(0);
+    Thread.sleep(1000);
+   // intake.powerRun((float) -.2);
+    Thread.sleep(250);
+    //SERVO LOAD
+    Thread.sleep(500);
+    shooter.runPower((float) -.5);
+    Thread.sleep(750);
+    shooter.runPower((float) 1);
+    Thread.sleep(750);
+    shooter.runPower(0);
 
-
-
-
-
-
+    mecanum.stop();
 
   }
 }

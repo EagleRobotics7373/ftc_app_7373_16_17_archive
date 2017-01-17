@@ -48,6 +48,33 @@ public class Mecanum {
     }
 
     /**
+    Method for running the mecanum wheels
+    x is input for forward/reverse
+    y is input for left/right
+    z is input for rotation
+     k is coef for drive
+     */
+    public void run(float x, float y, float z, float k)
+    {
+        //calculate each wheel power and clip it
+        float powLF = x + y + z;
+        powLF = (float)Range.clip(powLF, -1, 1);
+        float powLR = x - y + z;
+        powLR = (float)Range.clip(powLR, -1, 1);
+        float powRF = x - y - z;
+        powRF = (float)-Range.clip(powRF, -1, 1);
+        float powRR = x + y - z;
+        powRR =(float)-Range.clip(powRR, -1, 1);
+
+        //send the power to each wheel
+        leftfront.setPower(k*powLF);
+        leftrear.setPower(k*powLR);
+        rightfront.setPower(k*powRF);
+        rightrear.setPower(k*powRR);
+
+    }
+
+    /**
      * Method for running the wheels a set distance forward or backward
      *
      * Reset Encoders

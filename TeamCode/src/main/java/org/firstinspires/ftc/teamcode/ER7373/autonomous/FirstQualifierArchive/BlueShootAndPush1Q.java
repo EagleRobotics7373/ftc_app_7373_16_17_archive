@@ -29,11 +29,12 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package org.firstinspires.ftc.teamcode.ER7373.autonomous;
+package org.firstinspires.ftc.teamcode.ER7373.autonomous.FirstQualifierArchive;
 
 //import classes from the MR Library
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -47,7 +48,7 @@ import org.firstinspires.ftc.teamcode.ER7373.mechanics.Shooter;
 
 
 @Autonomous(name = "7373 BlueAuto", group = "Concept")
-//@Disabled
+@Disabled
 
 public class BlueShootAndPush1Q extends LinearOpMode  {
 

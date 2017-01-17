@@ -31,9 +31,9 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package org.firstinspires.ftc.teamcode.ER11364;
 
-import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -49,36 +49,36 @@ import org.firstinspires.ftc.teamcode.ER7373.mechanics.Shooter;
  * Teleop program for 11364 for 1st Qualifier
  *
  */
-@Autonomous(name = "11364 Auto", group = "Concept")
+
+@TeleOp(name = "11364 Teleop", group = "11364")
 @Disabled
-public class Q1Auto11364 extends LinearOpMode {
+public class Q2Teleop11364 extends OpMode {
 
   //create all motor variables for the drive train
   DcMotor leftFront;
   DcMotor leftRear;
   DcMotor rightFront;
   DcMotor rightRear;
+  float k = 1;
+  public enum gear{low, mid, high}
+
+
+
 
   //create all motor variables for the shooter
   DcMotor shooterM;
 
   //create all motor variables for the intake
-  DcMotor intakel;
-  DcMotor intaker;
+  DcMotor intakeMotor;
 
-  //create ball stop servos
-  Servo stop;
-
-  //create CR servo for intake
-  Servo intakeServo;
-  Servo activeIntakeServo;
-
+  //create servo variables for the shooter
+  Servo shooterBlock;
 
 
   private ElapsedTime runtime = new ElapsedTime();
 
   @Override
-  public void runOpMode() throws InterruptedException{
+  public void init() {
     telemetry.addData("Status", "Initialized");
 
     //add all motors to the hardware map
@@ -87,13 +87,12 @@ public class Q1Auto11364 extends LinearOpMode {
     rightRear = hardwareMap.dcMotor.get("rightrear");
     rightFront = hardwareMap.dcMotor.get("rightfront");
     shooterM = hardwareMap.dcMotor.get("shooter");
-    intakel = hardwareMap.dcMotor.get("intakeleft");
-    intaker = hardwareMap.dcMotor.get("intakeright");
+    intakeMotor = hardwareMap.dcMotor.get("intake");
+
 
     //add servos to the hardware map
-    stop = hardwareMap.servo.get("servolower");
-    intakeServo = hardwareMap.servo.get("intakeservo");
-    activeIntakeServo = hardwareMap.servo.get("activeintakeservo");
+    shooterBlock = hardwareMap.servo.get("shooterblock");
+
 
 
 
@@ -103,59 +102,61 @@ public class Q1Auto11364 extends LinearOpMode {
     rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     shooterM.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    intakel.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    intaker.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    intakeMotor.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+  }
+
+  @Override
+  public void init_loop() {
+  }
+
+  @Override
+  public void start() {
+    runtime.reset();
+  }
+
+  @Override
+  public void loop() {
     telemetry.addData("Status", "Run Time: " + runtime.toString());
 
     //instantiate all objects for all systems
     Mecanum mecanum = new Mecanum(leftFront,leftRear, rightFront, rightRear);
 
-    Shooter intake = new Shooter(intakel, intaker);
+    Motor intake = new Motor(intakeMotor);
 
     Motor shooter = new Motor(shooterM);
 
-    //create 2 servo objects for the upper and lower servos
-    //ServoM stopServo = new ServoM(stop);
 
 
-    waitForStart();
+    //run the mecanum wheels   ****Add gear ratio
+    mecanum.run(gamepad1.left_stick_y,gamepad1.left_stick_x,gamepad1.right_stick_x, k);
 
-    /**
-     * 1.  Drive forward a set distance
-     * 2.  Shoot a ball
-     * 3.  Reset shooter
-     * 4.  Load new ball
-     * 5.  Shoot ball
-     * 6.  Reset Shooter
-     */
+    //run the shooter .5 rotation down if gamepad 2 a is pressed and .5 rotation up if b is pressed
+    if(gamepad2.a)shooter.runPower((float) -.5);
+    else if(gamepad2.b)shooter.runPower((float).5);
+    else shooter.runPower(-gamepad2.right_stick_y);
 
-    mecanum.run((float) -.3, 0, 0);
-    Thread.sleep(800);
-    mecanum.stop();
-    Thread.sleep(1500);
-    shooter.runPower((float) -.5);
-    Thread.sleep(500);
 
-    shooter.runPower((float) 1);
-    Thread.sleep(1000);
-    shooter.runPower((float) 0);
-    Thread.sleep(500);
-    intake.powerRun((float) .2);
-    Thread.sleep(600);
-    intake.powerRun(0);
-    Thread.sleep(1000);
-    intake.powerRun((float) -.2);
-    Thread.sleep(250);
-    //SERVO LOAD
-    Thread.sleep(500);
-    shooter.runPower((float) -.5);
-    Thread.sleep(750);
-    shooter.runPower((float) 1);
-    Thread.sleep(750);
-    shooter.runPower(0);
+    //run the intake with left joystick on gamepad 2
+    intake.runPower(-gamepad2.right_trigger+gamepad2.left_trigger);
 
-    mecanum.stop();
+
+
+    //run the servo for the intake using the dpad
+    if (gamepad2.dpad_down){
+      shooterBlock.setPosition((float) 0.0);
+    } else if(gamepad2.dpad_up)
+      shooterBlock.setPosition((float) .5);
+
+
+
+
+
+
+
+
+
+
 
   }
 }
