@@ -31,8 +31,10 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
 package org.firstinspires.ftc.teamcode.ER7373.teleop;
 
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
@@ -42,7 +44,8 @@ import org.firstinspires.ftc.teamcode.ER7373.mechanics.Mecanum;
 
 
 @TeleOp(name = "Pushbot Teleop", group = "Concept")
-//@Disabled
+@Disabled
+
 
 public class teleop_pushbot_mecanum extends OpMode {
 

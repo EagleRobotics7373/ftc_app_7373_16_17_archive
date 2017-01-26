@@ -12,11 +12,12 @@ import com.qualcomm.robotcore.hardware.I2cAddr;
  * Name color sensor anything
  *
  */
-public class AdafruitRGBSensorObj {
+public class AdafruitRGBSensorObjMux {
 	//variables for the color sensor and led and CDIM
 	private int led;
-	private ColorSensor rgb;
 	private DeviceInterfaceModule cdim;
+	private MuxColor mux;
+	private int muxPort;
 
 	//array to store the RGB values of the sensor
 	private int[] rgbVal;
@@ -26,32 +27,20 @@ public class AdafruitRGBSensorObj {
 
 
 	//constructor for color sensor
-	public AdafruitRGBSensorObj(ColorSensor color,DeviceInterfaceModule coredim, int digitalPin){
-		//get color sensor from hardware map
-		rgb = color;
+	public AdafruitRGBSensorObjMux(MuxColor MUX, int port,DeviceInterfaceModule coredim, int digitalPin){
+		//assign mux and port
+		mux = MUX;
+		muxPort = port;
 		//get cdim from hardware map
 		cdim = coredim;
 		//set value for digital pin
 		led = digitalPin;
 	}
 
-	//method to initialize the sensor with i2c address
+	//method to initialize the sensor
 	public void initialize(){
-		//assign the i2c address
-		rgb.setI2cAddress(I2cAddr.create8bit(0x3c));
 		//initialize new rgb array
-		rgbVal = new int[3];
-		//intialize the digital channel for the led
-		cdim.setDigitalChannelMode(led, DigitalChannelController.Mode.OUTPUT);
-		//turn led on needs to be turned off on start
-		ledON();
-	}
-
-	public void initialize(int address){
-		//assign the i2c address
-		rgb.setI2cAddress(I2cAddr.create8bit(address));
-		//initialize new rgb array
-		rgbVal = new int[3];
+		rgbVal = new int[4];
 		//intialize the digital channel for the led
 		cdim.setDigitalChannelMode(led, DigitalChannelController.Mode.OUTPUT);
 		//turn led on needs to be turned off on start
@@ -93,12 +82,11 @@ public class AdafruitRGBSensorObj {
 		return rgbVal[1];
 	}
 
-	/* method to return the alpha value
+	//method to return the alpha value
 	public int alpha(){
 		rgbArrayUpdate();
 		return rgbVal[3];
 	}
-	 */
 
 	//method to return array of rgb values
 	public int[] rgbArray(){
@@ -108,9 +96,9 @@ public class AdafruitRGBSensorObj {
 
 	//method to return array of rgb values
 	public void rgbArrayUpdate(){
-		rgbVal[0] = rgb.red();
-		rgbVal[1] = rgb.green();
-		rgbVal[2] = rgb.blue();
-		//rgbVal[3] = rgb.alpha();
+		rgbVal[0] = mux.getCRGB(muxPort)[1];
+		rgbVal[1] = mux.getCRGB(muxPort)[2];
+		rgbVal[2] = mux.getCRGB(muxPort)[3];
+		rgbVal[3] = mux.getCRGB(muxPort)[0];
 	}
 }

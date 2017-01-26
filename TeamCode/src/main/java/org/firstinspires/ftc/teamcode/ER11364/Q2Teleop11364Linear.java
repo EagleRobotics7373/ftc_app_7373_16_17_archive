@@ -55,7 +55,7 @@ import org.firstinspires.ftc.teamcode.ER7373.mechanics.Motor;
  * Remove or comment out the @Disabled line to add this opmode to the Driver Station OpMode list
  */
 
-@TeleOp(name="Teleop Q2", group="11364")  // @Autonomous(...) is the other common choice
+@TeleOp(name="11364 Teleop Q2", group="11364")  // @Autonomous(...) is the other common choice
 //@Disabled
 public class Q2Teleop11364Linear extends LinearOpMode {
 
@@ -150,7 +150,12 @@ public class Q2Teleop11364Linear extends LinearOpMode {
                     break;
             }
 
-            mecanum.run(gamepad1.left_stick_y,-gamepad1.right_stick_x,-gamepad1.left_stick_x, k);
+            mecanum.runCoef(gamepad1.left_stick_y,-gamepad1.right_stick_x,-gamepad1.left_stick_x, k);
+            telemetry.addData("Drive Values: ", mecanum.runVal()[0]
+                    + " " + mecanum.runVal()[1]
+                    + " " + mecanum.runVal()[2]
+                    + " " + mecanum.runVal()[3]);
+
 
             //run the shooter .5 rotation down if gamepad 2 a is pressed and .5 rotation up if b is pressed
             if(gamepad2.a)shooter.runPower((float) -.5);
@@ -159,14 +164,14 @@ public class Q2Teleop11364Linear extends LinearOpMode {
 
 
             //run the intake with left joystick on gamepad 2
-            intake.runPower(gamepad2.right_trigger-gamepad2.left_trigger);
+            intake.runPower(-gamepad2.right_trigger+gamepad2.left_trigger);
 
 
 
             //run the servo for the intake using the dpad
-            if (gamepad2.dpad_down){
+            if (gamepad2.dpad_up){
                 shooterBlock.setPosition((float) 0.5);
-            } else if(gamepad2.dpad_up)
+            } else if(gamepad2.dpad_down)
                 shooterBlock.setPosition((float) 1.0);
         }
     }

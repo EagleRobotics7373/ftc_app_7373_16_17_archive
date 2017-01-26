@@ -28,10 +28,7 @@ public class MaxbotixRangeObj {
      * created using hardware map get for analogInput device
      */
 
-    public MaxbotixRangeObj(AnalogInput r){
-        range = r;
-
-    }
+    public MaxbotixRangeObj(AnalogInput r){ range = r;}
 
     //method to read the raw analog value
     public double rawRead(){
@@ -42,8 +39,8 @@ public class MaxbotixRangeObj {
     public double distance(){
         raw = range.getVoltage();
 
-        //code to convert
-
+        //code to convert using equation d in inches = 106.5 v + 0.0093
+        calculated = 106.5*raw + 0.0093;
 
         return calculated;
     }

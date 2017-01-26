@@ -29,10 +29,9 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 
-package org.firstinspires.ftc.teamcode.ER11364.Archive;
+package org.firstinspires.ftc.teamcode.ER11364.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -40,7 +39,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ER7373.mechanics.Mecanum;
 import org.firstinspires.ftc.teamcode.ER7373.mechanics.Motor;
-import org.firstinspires.ftc.teamcode.ER7373.mechanics.Shooter;
+import org.firstinspires.ftc.teamcode.ER7373.mechanics.ServoM;
 
 //import modern robotics library classes
 //import Eagle Robotics 7373 library classes
@@ -49,9 +48,9 @@ import org.firstinspires.ftc.teamcode.ER7373.mechanics.Shooter;
  * Teleop program for 11364 for 1st Qualifier
  *
  */
-@Autonomous(name = "Q1 11364 Auto", group = "11364")
-@Disabled
-public class Q1Auto11364 extends LinearOpMode {
+@Autonomous(name = "11364 Auto Shoot Delay", group = "11364")
+//@Disabled
+public class Q2AutoShoot11364Delay extends LinearOpMode {
 
   //create all motor variables for the drive train
   DcMotor leftFront;
@@ -62,10 +61,10 @@ public class Q1Auto11364 extends LinearOpMode {
   //create all motor variables for the shooter
   DcMotor shooterM;
 
-  //create all motor variables for the intake
   DcMotor intake;
 
-
+  //create all motor variables for the stop servo
+  Servo stop;
 
   private ElapsedTime runtime = new ElapsedTime();
 
@@ -80,6 +79,9 @@ public class Q1Auto11364 extends LinearOpMode {
     rightFront = hardwareMap.dcMotor.get("rightfront");
     shooterM = hardwareMap.dcMotor.get("shooter");
     intake = hardwareMap.dcMotor.get("intake");
+
+    //get servo from hardware map
+    stop = hardwareMap.servo.get("shooterblock");
 
 
 
@@ -96,12 +98,13 @@ public class Q1Auto11364 extends LinearOpMode {
     //instantiate all objects for all systems
     Mecanum mecanum = new Mecanum(leftFront,leftRear, rightFront, rightRear);
 
-    //Shooter intake = new Shooter(intakel, intaker);
-
     Motor shooter = new Motor(shooterM);
 
-    //create 2 servo objects for the upper and lower servos
-    //ServoM stopServo = new ServoM(stop);
+    Motor in = new Motor(intake);
+
+    //create servo objects for the upper and lower servos
+    ServoM stopServo = new ServoM(stop);
+    stopServo.setPos((float)1);
 
 
     waitForStart();
@@ -115,30 +118,47 @@ public class Q1Auto11364 extends LinearOpMode {
      * 6.  Reset Shooter
      */
 
+    Thread.sleep(10000);
+
     mecanum.run((float) -.3, 0, 0);
-    Thread.sleep(800);
+    Thread.sleep(900);
     mecanum.stop();
+
     Thread.sleep(1500);
-    shooter.runPower((float) -.5);
+    shooter.runPower((float)-.5);
+    Thread.sleep(700);
+    shooter.stop();
+
+    Thread.sleep(1500);
+
+    shooter.runPower((float).5);
+    Thread.sleep(700);
+    shooter.stop();
+
+    stopServo.setPos((float).5);
+    in.runPower(-1);
+    Thread.sleep(3000);
+    in.runPower(0);
+
+    shooter.runPower((float)-.5);
+    Thread.sleep(700);
+    shooter.stop();
+
+    Thread.sleep(1500);
+    shooter.runPower((float).5);
+    Thread.sleep(700);
+    shooter.stop();
+
+    mecanum.run((float) -.75,0,0);
     Thread.sleep(500);
 
-    shooter.runPower((float) 1);
+    mecanum.run(0,(float) -1,0);
     Thread.sleep(1000);
-    shooter.runPower((float) 0);
-    Thread.sleep(500);
-   // intake.powerRun((float) .2);
-    Thread.sleep(600);
-   // intake.powerRun(0);
+
+    mecanum.run(0,0,(float) 1);
     Thread.sleep(1000);
-   // intake.powerRun((float) -.2);
-    Thread.sleep(250);
-    //SERVO LOAD
-    Thread.sleep(500);
-    shooter.runPower((float) -.5);
-    Thread.sleep(750);
-    shooter.runPower((float) 1);
-    Thread.sleep(750);
-    shooter.runPower(0);
+
+
 
     mecanum.stop();
 

@@ -91,7 +91,7 @@ public class AdafruitRGBTest extends OpMode {
     telemetry.addData("Red: ", rgb.red());
     telemetry.addData("Green: ", rgb.green());
     telemetry.addData("Blue: ", rgb.blue());
-    telemetry.addData("Alpha: ", rgb.alpha());
+    //telemetry.addData("Alpha: ", rgb.alpha());
 
     if(gamepad1.x) x = !x;
     if(x)

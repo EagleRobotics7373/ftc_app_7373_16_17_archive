@@ -33,32 +33,28 @@ THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 package org.firstinspires.ftc.teamcode.ER11364.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
+import com.qualcomm.robotcore.hardware.*;
 
 import org.firstinspires.ftc.teamcode.ER7373.functions.ArrayCompare;
 import org.firstinspires.ftc.teamcode.ER7373.mechanics.Mecanum;
+import org.firstinspires.ftc.teamcode.ER7373.mechanics.Motor;
 import org.firstinspires.ftc.teamcode.ER7373.sensors.AdafruitRGBSensorObj;
 import org.firstinspires.ftc.teamcode.ER7373.sensors.MaxbotixRangeObj;
 
 
 @Autonomous(name="BeaconPressRight", group="Autonomous")
-//@Disabled
+@Disabled
 public class BeaconPressRight extends LinearOpMode {
 
 	/* Declare OpMode members. */
 	private ElapsedTime runtime = new ElapsedTime();
 
-	//variables
 	public enum followline{on, leftOff, rightOff, off}
 	followline linestat;
 	followline laststate;
-
-	ArrayCompare array;
-	int[] floorRef = {350,200,200};
-
-	int distanceNeeded = 1000;
-
 
 
 	@Override
@@ -67,24 +63,44 @@ public class BeaconPressRight extends LinearOpMode {
 		telemetry.addData("Status", "Initialized");
 		telemetry.update();
 
-		//create objects for drive train and 2 color sensors and range finder
+		//variables
+		ArrayCompare array = new ArrayCompare();
+		int[] floorRef = {350,200,200,0};
+
+		int distanceNeeded = 1000;
+
+		//create objects for drive train and shooter and servo
 		Mecanum mecanum = new Mecanum(hardwareMap.dcMotor.get("leftfront"),
 				hardwareMap.dcMotor.get("leftrear"),
 				hardwareMap.dcMotor.get("rightfront"),
 				hardwareMap.dcMotor.get("rightrear"));
 
+		Servo shooterBlock = hardwareMap.servo.get("shooterblock");
+
+		//Motor shooter = new Motor(shooterM);
+
+
 		AdafruitRGBSensorObj colorFL = new AdafruitRGBSensorObj(hardwareMap.colorSensor.get("colorFL"),
 				hardwareMap.deviceInterfaceModule.get("dim"), 0);
+		//set i2c address to 0x3c
+		colorFL.initialize(0x3c);
+
 		AdafruitRGBSensorObj colorFR = new AdafruitRGBSensorObj(hardwareMap.colorSensor.get("colorFR"),
 				hardwareMap.deviceInterfaceModule.get("dim"), 1);
+		//set i2c address to 0x4c
+		colorFR.initialize(0x4c);
 
 		//create color sensors for beacon and turn off LED
 		AdafruitRGBSensorObj colorBL = new AdafruitRGBSensorObj(hardwareMap.colorSensor.get("colorBL"),
 				hardwareMap.deviceInterfaceModule.get("dim"), 2);
-		colorBL.ledOFF();
+		//set i2c address to 0x5c
+		colorBL.initialize(0x5c);
+
 		AdafruitRGBSensorObj colorBR = new AdafruitRGBSensorObj(hardwareMap.colorSensor.get("colorBR"),
 				hardwareMap.deviceInterfaceModule.get("dim"), 3);
-		colorBR.ledOFF();
+		//set i2c address to 0x6c
+		colorBR.initialize(0x6c);
+
 
 		MaxbotixRangeObj range = new MaxbotixRangeObj(hardwareMap.analogInput.get("range"));
 
@@ -98,13 +114,26 @@ public class BeaconPressRight extends LinearOpMode {
 			telemetry.addData("Status", "Run Time: " + runtime.toString());
 			telemetry.update();
 
-			//shoot????
+			/**
+			 * OVERALL PLAN:
+			 * 1. ??? Shoot
+			 * 		Shoot Ball
+			 * 		Load New Ball
+			 * 		Shoot Ball
+			 * 		Close Gate
+			 * 2. ??? Turn to face line
+			 * 3. Drive forward up until the line
+			 * 4. Get Aligned with the line
+			 * 5. Stop at x Distance from the wall
+			 * 6. Read the beacon and decide which side to move on
+			 * 7. Turn to left or right to hit button
+			 * 8 ??? Confirm hit and correct
+			 * 9.??? Move to next beacon
+			 */
 
-			//drive to line code
 
-            //Turn????
 
-            //Drive Straight
+            //Drive Straight up until hit line
 			while(array.lessThan(colorFL.rgbArray(),floorRef) && array.lessThan(colorFR.rgbArray(), floorRef)){
 				mecanum.run((float).5,0,0);
 			}

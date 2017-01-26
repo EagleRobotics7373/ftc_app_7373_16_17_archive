@@ -30,32 +30,26 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.teamcode.ER11364.autonomous;
+package org.firstinspires.ftc.teamcode.ER7373.sensors;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import com.qualcomm.robotcore.hardware.ColorSensor;
-import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
-import com.qualcomm.robotcore.util.ElapsedTime;
-
 import org.firstinspires.ftc.teamcode.ER7373.functions.ArrayCompare;
-import org.firstinspires.ftc.teamcode.ER7373.sensors.AdafruitRGBSensorObj;
-import org.firstinspires.ftc.teamcode.ER7373.sensors.MaxbotixRangeObj;
+import org.firstinspires.ftc.teamcode.ER7373.sensors.*;
 
 
 @Autonomous(name="DATAOP", group="Autonomous")
-//@Disabled
-public class Q2DataOp extends LinearOpMode{
+@Disabled
+public class DataOp extends LinearOpMode{
 
 	/* Declare OpMode members. */
 	private ElapsedTime runtime = new ElapsedTime();
 
 
-	int[] floorRef = {350,200,200};
 
-	String stat = "";
 
 	@Override
 	public void runOpMode() throws InterruptedException {
@@ -63,29 +57,36 @@ public class Q2DataOp extends LinearOpMode{
 		telemetry.addData("Status", "Initialized");
 		telemetry.update();
 
+		// TODO:: NEW Values int[] floorRef = {350,200,200,0};
+		//ArrayCompare array = new ArrayCompare();
 
+		String stat;
 
-		ArrayCompare array = new ArrayCompare();
+		int[] ports = {2};
 
-		//create sensor objects
-		AdafruitRGBSensorObj colorFL = new AdafruitRGBSensorObj(hardwareMap.colorSensor.get("colorFL"),
-				hardwareMap.deviceInterfaceModule.get("dim"), 0);
+		//create mux and sensor objects
+		MuxColor mux = new MuxColor(hardwareMap, "mux", "color", ports, 0xD6, 0x02);
 
-		AdafruitRGBSensorObj colorFR = new AdafruitRGBSensorObj(hardwareMap.colorSensor.get("colorFR"),
+		AdafruitRGBSensorObjMux colorFL = new AdafruitRGBSensorObjMux(mux, 1,
 				hardwareMap.deviceInterfaceModule.get("dim"), 1);
+		colorFL.initialize();
 
-		/**
-
-		//create color sensors for beacon and turn off LED
-		AdafruitRGBSensorObj colorBL = new AdafruitRGBSensorObj(hardwareMap.colorSensor.get("colorBL"),
+		AdafruitRGBSensorObjMux colorFR = new AdafruitRGBSensorObjMux(mux, 2,
 				hardwareMap.deviceInterfaceModule.get("dim"), 2);
+		colorFR.initialize();
 
-		AdafruitRGBSensorObj colorBR = new AdafruitRGBSensorObj(hardwareMap.colorSensor.get("colorBR"),
+		AdafruitRGBSensorObjMux colorBL = new AdafruitRGBSensorObjMux(mux, 3,
 				hardwareMap.deviceInterfaceModule.get("dim"), 3);
+		colorBL.initialize();
 
+		AdafruitRGBSensorObjMux colorBR = new AdafruitRGBSensorObjMux(mux, 4,
+				hardwareMap.deviceInterfaceModule.get("dim"), 4);
+		colorBR.initialize();
+
+		mux.startPolling();
 
 		MaxbotixRangeObj range = new MaxbotixRangeObj(hardwareMap.analogInput.get("range"));
-		*/
+
 
 
 		//wait for start of op mode
@@ -97,33 +98,45 @@ public class Q2DataOp extends LinearOpMode{
 			telemetry.addData("Status", "Run Time: " + runtime.toString());
 			telemetry.update();
 
+
+
 			//light status
+			colorBL.ledOFF();
+			colorBR.ledOFF();
 			colorFL.ledON();
 			colorFR.ledON();
-			//colorBL.ledOFF();
-			//colorBR.ledOFF();
+
+			telemetry.addData("Red: ", mux.getCRGB(2)[1]);
+			telemetry.addData("Green: ", mux.getCRGB(2)[2]);
+			telemetry.addData("Blue: ", mux.getCRGB(2)[3]);
+			telemetry.addData("Clear: ", mux.getCRGB(2)[0]);
 
 
-			//return values for each sensor
-			stat = array.greaterEqual(colorFL.rgbArray(),floorRef) ? "Line" : "Floor";
-			telemetry.addData("Floor Left:", stat);
-			Thread.sleep(5);
 
-			stat = array.greaterEqual(colorFR.rgbArray(),floorRef) ? "Line" : "Floor";
-			telemetry.addData("Floor Right:", stat);
-			Thread.sleep(5);
-/**
-			stat = colorBL.red()>colorBL.blue() ? "Red" : "Blue";
-			telemetry.addData("Beacon Left:", stat);
-			Thread.sleep(5);
+			/**
+			//return values for each sensor with compares
+			stat = "" + colorFL.rgbArray();
+			telemetry.addData("Floor Left: ", stat);
 
-			stat =  colorBR.red()>colorBR.blue() ? "Red" : "Blue";
-			telemetry.addData("Beacon Left:", stat);
-			Thread.sleep(5);
 
-			telemetry.addData("Range:", range.rawRead());
-			Thread.sleep(5);
- */
+			stat = "" + colorFR.rgbArray();
+			telemetry.addData("Floor Right: ", stat);
+
+
+			stat = "Red " + colorBL.rgbArray()[1] + " Blue " + colorBL.rgbArray()[3];
+			telemetry.addData("Beacon Left: ", stat);
+
+
+			stat = "Red " + colorBR.rgbArray()[1] + " Blue " + colorBR.rgbArray()[3];
+			telemetry.addData("Beacon Right: ", stat);
+			 */
+
+
+			telemetry.addData("Range:", range.distance() + " Inches");
+
+
+
+
 
 		}
 	}

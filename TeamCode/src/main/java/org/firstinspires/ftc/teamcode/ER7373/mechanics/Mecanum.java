@@ -13,6 +13,13 @@ public class Mecanum {
     private DcMotor rightfront;
     private DcMotor rightrear;
 
+    //drive power values
+    float powLF;
+    float powLR;
+    float powRF;
+    float powRR;
+    private float[] power = new float[4];
+
     //constructor for mecanum object with 4 parameters of each motor on the drive train
     public Mecanum(DcMotor lf, DcMotor lr, DcMotor rf, DcMotor rr){
         //set the private vars equal to the parameters of the object
@@ -29,6 +36,11 @@ public class Mecanum {
      */
     public void run(float x, float y, float z)
     {
+        //set a deadzone
+        if(x <= .05 && x >= -.05) x = 0;
+        if(y <= .05 && y >= -.05) y = 0;
+        if(z <= .05 && z >= -.05) z = 0;
+
         //calculate each wheel power and clip it
         float powLF = x + y + z;
         powLF = (float)Range.clip(powLF, -1, 1);
@@ -54,24 +66,38 @@ public class Mecanum {
     z is input for rotation
      k is coef for drive
      */
-    public void run(float x, float y, float z, float k)
+    public void runCoef(float x, float y, float z, float k)
     {
+        //set a deadzone
+        if(x <= .05 && x >= -.05) x = 0;
+        if(y <= .05 && y >= -.05) y = 0;
+        if(z <= .05 && z >= -.05) z = 0;
+
         //calculate each wheel power and clip it
-        float powLF = x + y + z;
-        powLF = (float)Range.clip(powLF, -1, 1);
-        float powLR = x - y + z;
-        powLR = (float)Range.clip(powLR, -1, 1);
-        float powRF = x - y - z;
-        powRF = (float)-Range.clip(powRF, -1, 1);
-        float powRR = x + y - z;
-        powRR =(float)-Range.clip(powRR, -1, 1);
+        powLF = x + y + z;
+        powLF = (float)k*Range.clip(powLF, -1, 1);
+        powLR = x - y + z;
+        powLR = (float)k*Range.clip(powLR, -1, 1);
+        powRF = x - y - z;
+        powRF = (float)-k*Range.clip(powRF, -1, 1);
+        powRR = x + y - z;
+        powRR =(float)-k*Range.clip(powRR, -1, 1);
 
+    }
+
+    //return drive vals
+    public float[] runVal(){
         //send the power to each wheel
-        leftfront.setPower(k*powLF);
-        leftrear.setPower(k*powLR);
-        rightfront.setPower(k*powRF);
-        rightrear.setPower(k*powRR);
+        leftfront.setPower(powLF);
+        power[0] = powLF;
+        leftrear.setPower(powLR);
+        power[1] = powLR;
+        rightfront.setPower(powRF);
+        power[2] = powRF;
+        rightrear.setPower(powRR);
+        power[3] = powRR;
 
+        return power;
     }
 
     /**

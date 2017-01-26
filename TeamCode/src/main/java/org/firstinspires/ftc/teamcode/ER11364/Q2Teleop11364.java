@@ -129,7 +129,7 @@ public class Q2Teleop11364 extends OpMode {
 
 
     //run the mecanum wheels   ****Add gear ratio
-    mecanum.run(gamepad1.left_stick_y,gamepad1.left_stick_x,gamepad1.right_stick_x, k);
+    mecanum.runCoef(gamepad1.left_stick_y,gamepad1.left_stick_x,gamepad1.right_stick_x, k);
 
     //run the shooter .5 rotation down if gamepad 2 a is pressed and .5 rotation up if b is pressed
     if(gamepad2.a)shooter.runPower((float) -.5);
