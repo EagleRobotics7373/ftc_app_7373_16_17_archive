@@ -54,12 +54,12 @@ public class MRSensorTest extends LinearOpMode {
 
       MRRange range = new MRRange(hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range"));
 
-      MRColorRaw color = new MRColorRaw(hardwareMap.deviceInterfaceModule.get("dim"), 0, 0x1c);
-      //color.ledOff();
 
+      MRColorRaw color = new MRColorRaw(hardwareMap.deviceInterfaceModule.get("dim"), 0, 0x1c);
 
       MRColorRaw color2 = new MRColorRaw(hardwareMap.deviceInterfaceModule.get("dim"), 2, 0x8c);
-      //color2.ledOn();
+
+      MRColorRaw color3 = new MRColorRaw(hardwareMap.deviceInterfaceModule.get("dim"), 3, 0x4c);
 
 
     telemetry.addData("Status", "Initialized");
@@ -72,7 +72,7 @@ public class MRSensorTest extends LinearOpMode {
 
       telemetry.addData("Status", "Run Time: " + runtime.toString());
 
-        Thread.sleep(50);
+
 
        telemetry.addData("R: ", color.rgbc()[0]);
 
@@ -82,7 +82,7 @@ public class MRSensorTest extends LinearOpMode {
 
        telemetry.addData("C: ", color.rgbc()[3]);
 
-        Thread.sleep(50);
+
 
         telemetry.addData("R2: ", color2.rgbc()[0]);
 
@@ -91,6 +91,16 @@ public class MRSensorTest extends LinearOpMode {
         telemetry.addData("B2: ", color2.rgbc()[2]);
 
         telemetry.addData("C2: ", color2.rgbc()[3]);
+
+
+        telemetry.addData("R3: ", color3.rgbc()[0]);
+
+        telemetry.addData("G3: ", color3.rgbc()[1]);
+
+        telemetry.addData("B3: ", color3.rgbc()[2]);
+
+        telemetry.addData("C3: ", color3.rgbc()[3]);
+
 
        telemetry.addData("U: ", range.in()[0]);
 
