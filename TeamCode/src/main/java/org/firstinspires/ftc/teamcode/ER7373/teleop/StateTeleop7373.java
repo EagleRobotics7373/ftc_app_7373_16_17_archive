@@ -69,7 +69,7 @@ public class StateTeleop7373 extends LinearOpMode {
   DcMotor intakem;
 
   //motor variable for capball lift
-  //DcMotor linearSlide;
+  DcMotor linearSlide;
 
   //servo variable for the ball stop and its 2 positions
   Servo ballStop;
@@ -77,13 +77,18 @@ public class StateTeleop7373 extends LinearOpMode {
   double open = 1;
 
   //servo for cap ball lift
- //Servo leftLift;
-  //Servo rightLift;
+  Servo dropLift;
 
 
   //Logic Variables8
   boolean shooterPower = false;
-  boolean stopToggle = false;
+  boolean stoptoggle = false;
+
+  //enum for the gear
+  enum gear{
+    low, mid, high
+  }
+  gear gearstate = gear.high;
 
 
   @Override
@@ -98,7 +103,7 @@ public class StateTeleop7373 extends LinearOpMode {
     shooterLeft = hardwareMap.dcMotor.get("shooterleft");
     shooterRight = hardwareMap.dcMotor.get("shooterright");
     intakem = hardwareMap.dcMotor.get("intake");
-    //linearSlide = hardwareMap.dcMotor.get("linearslide");
+    linearSlide = hardwareMap.dcMotor.get("linearslide");
 
 
     //set all motors to their run modes
@@ -112,15 +117,13 @@ public class StateTeleop7373 extends LinearOpMode {
 
     //add servo to hardware map
     ballStop = hardwareMap.servo.get("ballstop");
-    //leftLift = hardwareMap.servo.get("leftlift");
-    //rightLift = hardwareMap.servo.get("rightlift");
+    dropLift = hardwareMap.servo.get("rightlift");
 
     //set servo to closed position
     ballStop.setPosition(closed);
 
     //set servo to start position
-    //rightLift.setPosition(1);
-    //leftLift.setPosition(1);
+    dropLift.setPosition(0);
 
 
     runtime.reset();
@@ -139,14 +142,31 @@ public class StateTeleop7373 extends LinearOpMode {
     Motor intake = new Motor(intakem);
 
     //create new Motor object for the linear slide
-    //Motor ballLift = new Motor(linearSlide);
+    Motor ballLift = new Motor(linearSlide);
 
     //wait for start
     waitForStart();
 
     while(opModeIsActive()) {
       //call mecanum run method to send power values to the drivetrain from the controllers
-      mecanum.run((float) -Math.pow(gamepad1.left_stick_y, 3), (float) Math.pow(gamepad1.left_stick_x, 3), (float) Math.pow(gamepad1.right_stick_x, 3));
+      if(gamepad1.dpad_up){
+        gearstate = gear.high;
+      } else if(gamepad1.dpad_left || gamepad1.dpad_right){
+        gearstate  = gear.mid;
+      } else if(gamepad1.dpad_down){
+        gearstate = gear.low;
+      }
+      switch (gearstate) {
+        case high:
+          mecanum.run((float) -Math.pow(gamepad1.left_stick_y, 3), (float) Math.pow(gamepad1.left_stick_x, 3), (float) Math.pow(gamepad1.right_stick_x, 3));
+          break;
+        case mid:
+          mecanum.runCoef((float) Math.pow(gamepad1.left_stick_y, 3), (float) Math.pow(gamepad1.left_stick_x, 3), (float) Math.pow(gamepad1.right_stick_x, 3), (float).5);
+          break;
+        case low:
+          mecanum.runCoef((float) Math.pow(gamepad1.left_stick_y, 3), (float) Math.pow(gamepad1.left_stick_x, 3), (float) Math.pow(gamepad1.right_stick_x, 3), (float).2);
+          break;
+      }
 
 
       /**
@@ -185,19 +205,21 @@ public class StateTeleop7373 extends LinearOpMode {
        *
        * Press b to toggle stop
        */
-
-      if (gamepad2.a) {
-        shooter.rpmRun(1100);
-        shooterPower = true;
-      } else if (gamepad2.x) {
-        shooter.rpmRun(1300);
-        shooterPower = true;
-      } else {
-        shooterPower = false;
+      if(!stoptoggle) {
+        if (gamepad2.a) {
+          shooter.rpmRun(1100);
+          stoptoggle = true;
+          //shooterPower = true;
+        } else if (gamepad2.x) {
+          shooter.rpmRun(1300);
+          stoptoggle = true;
+          //shooterPower = true;
+        } else {
+          //shooterPower = false;
+        }
       }
 
-
-      if (gamepad2.b) stopToggle = !stopToggle;
+      if(gamepad2.b) stoptoggle = false;
 
 
       //send each wheels current RPM values to the telemetry lines
@@ -208,22 +230,19 @@ public class StateTeleop7373 extends LinearOpMode {
       telemetry.addData("Status", "RPM Right:" + rpmr);
 
       // manual backup for running the shooter
-      if (!shooterPower) {
+      if (!stoptoggle) {
         shooter.powerRun((float) (-.7 * gamepad2.left_stick_y));
-      } else {
       }
 
 
       //code to run linear slide for cap ball
-      //ballLift.runPower(gamepad2.right_stick_y);
+      ballLift.runPower(gamepad2.right_stick_y);
 
       //code for the servos for the cap ball lift
-      /*
       if(gamepad2.right_stick_button){
-        rightLift.setPosition(1);
-        leftLift.setPosition(1);
+        dropLift.setPosition(1);
       }
-      */
+
     }
   }
 }

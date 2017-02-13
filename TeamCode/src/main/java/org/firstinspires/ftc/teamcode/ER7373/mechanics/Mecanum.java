@@ -43,13 +43,13 @@ public class Mecanum {
 
         //calculate each wheel power and clip it
         float powLF = x + y + z;
-        powLF = (float)Range.clip(powLF, -1, 1);
+        powLF = Range.clip(powLF, -1, 1);
         float powLR = x - y + z;
-        powLR = (float)Range.clip(powLR, -1, 1);
+        powLR = -Range.clip(powLR, -1, 1);
         float powRF = x - y - z;
-        powRF = (float)-Range.clip(powRF, -1, 1);
+        powRF = -Range.clip(powRF, -1, 1);
         float powRR = x + y - z;
-        powRR =(float)-Range.clip(powRR, -1, 1);
+        powRR = Range.clip(powRR, -1, 1);
 
         //send the power to each wheel
         leftfront.setPower(powLF);
@@ -77,11 +77,11 @@ public class Mecanum {
         powLF = x + y + z;
         powLF = (float)k*Range.clip(powLF, -1, 1);
         powLR = x - y + z;
-        powLR = (float)k*Range.clip(powLR, -1, 1);
+        powLR = (float)-k*Range.clip(powLR, -1, 1);
         powRF = x - y - z;
         powRF = (float)-k*Range.clip(powRF, -1, 1);
         powRR = x + y - z;
-        powRR =(float)-k*Range.clip(powRR, -1, 1);
+        powRR =(float)k*Range.clip(powRR, -1, 1);
 
     }
 
