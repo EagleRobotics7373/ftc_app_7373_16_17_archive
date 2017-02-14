@@ -30,25 +30,23 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.teamcode.ER7373.autonomous;
+package org.firstinspires.ftc.teamcode.ER11364.autonomous;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
-import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
-import org.firstinspires.ftc.teamcode.ER7373.mechanics.*;
-import org.firstinspires.ftc.teamcode.ER7373.sensors.*;
-import org.firstinspires.ftc.teamcode.ER7373.functions.*;
+import org.firstinspires.ftc.teamcode.ER7373.functions.ArrayCompare;
+import org.firstinspires.ftc.teamcode.ER7373.mechanics.Mecanum;
+import org.firstinspires.ftc.teamcode.ER7373.sensors.MRColorRaw;
+import org.firstinspires.ftc.teamcode.ER7373.sensors.MRRange;
 
 
-
-@Autonomous(name="BeaconPressBlue7373", group="Auto 7373")
+@Autonomous(name="BeaconPressBlue11364", group="Auto 11364")
 //@Disabled
-public class BeaconPressRight extends LinearOpMode {
+public class BeaconPressBlue extends LinearOpMode {
 
 	/* Declare OpMode members. */
 	private ElapsedTime runtime = new ElapsedTime();
@@ -72,30 +70,19 @@ public class BeaconPressRight extends LinearOpMode {
 		telemetry.addData("Status", "Initialized");
 		telemetry.update();
 
-		DcMotor shooterLeft;
-		DcMotor shooterRight;
-		shooterLeft = hardwareMap.dcMotor.get("shooterleft");
-		shooterRight = hardwareMap.dcMotor.get("shooterright");
-		shooterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		shooterRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-		Shooter shooter = new Shooter(shooterLeft, shooterRight);
-
-
 		//create objects for drive train and 2 color sensors and range finder
 		Mecanum mecanum = new Mecanum(hardwareMap.dcMotor.get("leftfront"),
 				hardwareMap.dcMotor.get("leftrear"),
 				hardwareMap.dcMotor.get("rightfront"),
 				hardwareMap.dcMotor.get("rightrear"));
 
-		DcMotor intakem = hardwareMap.dcMotor.get("intake");
-
 		//create obj for cdim
 		DeviceInterfaceModule dim = hardwareMap.deviceInterfaceModule.get("dim");
 
 		//create color sensors
-		MRColorRaw colorLeft = new MRColorRaw(dim, 5, 0x4c);
-		MRColorRaw colorRight = new MRColorRaw(dim, 3, 0x9c);
-		MRColorRaw colorFloor = new MRColorRaw(dim, 2, 0x1c);
+		MRColorRaw colorLeft = new MRColorRaw(dim, 2, 0x3c);
+		MRColorRaw colorRight = new MRColorRaw(dim, 1, 0x2c);
+		MRColorRaw colorFloor = new MRColorRaw(dim, 0, 0x1c);
 
 		//create range sensor
 		MRRange range = new MRRange(hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range"));
@@ -115,10 +102,11 @@ public class BeaconPressRight extends LinearOpMode {
 
 			//Drive Straight
 			while (colorFloor.rgbc()[0] <= floorRef[0] && opModeIsActive()) {
-				mecanum.run73ND((float) -.5, 0, 0);
+				mecanum.run((float) .3, 0, 0);
 			}
 
 			mecanum.stop();
+			Thread.sleep(500);
 
 			telemetry.addData("Status: ", "Found Line");
 			telemetry.update();
@@ -140,96 +128,93 @@ public class BeaconPressRight extends LinearOpMode {
 
 				switch (linestat) {
 					case on:
-						mecanum.run73ND((float) -.25, 0, 0);
+						mecanum.run((float) .15, 0, 0);
 						break;
 					case off:
 						if (team == teamColor.red) {
-							mecanum.run73ND(0, 0, -.15);
+							mecanum.run(0, 0, (float) .3);
 						} else if (team == teamColor.blue) {
-							mecanum.run73ND(0, 0, .15);
+							mecanum.run(0, 0, (float) -.3);
 						}
 						break;
 
 				}
 
 			}
-			shooter.rpmRun(1200);
-			mecanum.run73ND( -.2,0,0);
+			mecanum.run((float) .15,0,0);
 			Thread.sleep(500);
 
 			mecanum.stop();
 
 
 			//interact with beacon
-			telemetry.addData("Status: ", "Hit Beacon");
+			telemetry.addData("Status: ", "Checking Beacon");
 			telemetry.update();
 
-			//run back
-			while (range.in()[0] < distanceIn[0]) mecanum.run73ND( .2, 0, 0);
-			mecanum.stop();
+			Thread.sleep(1000);
 
-			intakem.setPower(1);
-			Thread.sleep(1500);
-			intakem.setPower(0);
-			shooter.rpmRun(0);
+			//run back
+			while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
+			mecanum.stop();
 
 			if (teamColor.red == team) {
 				if (colorLeft.rgbc()[0] > colorLeft.rgbc()[2] && colorRight.rgbc()[0] > colorRight.rgbc()[2]) {
 
 				} else {
+					Thread.sleep(4000);
 					//push button
-					mecanum.run73ND( -.2, 0, 0);
+					mecanum.run((float) .15, 0, 0);
 					Thread.sleep(1500);
 					mecanum.stop();
 
 					Thread.sleep(500);
 
 					//run back
-					while (range.in()[0] < distanceIn[0]) mecanum.run73ND((float) .2, 0, 0);
+					while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
 					mecanum.stop();
 				}
 			} else if (teamColor.blue == team) {
 				if (colorLeft.rgbc()[2] > colorLeft.rgbc()[0] && colorRight.rgbc()[2] > colorRight.rgbc()[0]) {
 
 				} else {
-					Thread.sleep(1000);
+					Thread.sleep(3000);
 					//push button
-					mecanum.run73ND((float) -.2, 0, 0);
+					mecanum.run((float) .15, 0, 0);
 					Thread.sleep(1500);
 					mecanum.stop();
 
 					Thread.sleep(500);
 
 					//run back
-					while (range.in()[0] < distanceIn[0]+3) mecanum.run73ND((float) .2, 0, 0);
+					while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
 					mecanum.stop();
 				}
 			}
 
 			//slide left or right depending on the team color
 			if (team == teamColor.red) {
-				mecanum.run73ND(0, -.35, 0);
+				mecanum.run(0, (float) .4, 0);
 				Thread.sleep(2000);
 
 				while (array.lessThanEqual(colorFloor.rgbc(), floorRef)) {
-					mecanum.run73ND(0, -.35, 0);
+					mecanum.run(0, (float) .4, 0);
 				}
 				mecanum.stop();
 				Thread.sleep(500);
 				while (array.lessThanEqual(colorFloor.rgbc(), floorRef)) {
-					mecanum.run73ND(0, .35, 0);
+					mecanum.run(0, (float) -.2, 0);
 				}
 
 			} else if (team == teamColor.blue) {
-				mecanum.run73ND(0, .35, 0);
+				mecanum.run(0, (float) -.4, 0);
 				Thread.sleep(2000);
 				while (array.lessThanEqual(colorFloor.rgbc(), floorRef)) {
-					mecanum.run73ND(0, .35, 0);
+					mecanum.run(0, (float) -.4, 0);
 				}
 				mecanum.stop();
 				Thread.sleep(500);
 				while (array.lessThanEqual(colorFloor.rgbc(), floorRef)) {
-					mecanum.run73ND(0, -.35, 0);
+					mecanum.run(0, (float) .2, 0);
 				}
 
 			}
@@ -249,17 +234,17 @@ public class BeaconPressRight extends LinearOpMode {
 
 				switch (linestat) {
 					case on:
-						mecanum.run73ND( -.2, 0, 0);
+						mecanum.run((float) .15, 0, 0);
 						break;
 					case off:
-						mecanum.run73ND( -.2, 0, 0);
+						mecanum.run((float) .15, 0, 0);
 						break;
 
 				}
 
 			}
 
-			mecanum.run((float) -.2,0,0);
+			mecanum.run((float) .15,0,0);
 			Thread.sleep(500);
 
 			mecanum.stop();
@@ -277,7 +262,7 @@ public class BeaconPressRight extends LinearOpMode {
 			Thread.sleep(500);
 
 			//run back
-			while (range.in()[0] < distanceIn[0]) mecanum.run73ND( .5, 0, 0);
+			while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
 			mecanum.stop();
 
 			if (teamColor.red == team) {
@@ -286,14 +271,14 @@ public class BeaconPressRight extends LinearOpMode {
 				} else {
 					Thread.sleep(3000);
 					//push button
-					mecanum.run73ND(-.2, 0, 0);
+					mecanum.run((float) .15, 0, 0);
 					Thread.sleep(1500);
 					mecanum.stop();
 
 					Thread.sleep(500);
 
 					//run back
-					while (range.in()[0] < distanceIn[0]) mecanum.run73ND( .2, 0, 0);
+					while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
 					mecanum.stop();
 				}
 			} else if (teamColor.blue == team) {
@@ -302,14 +287,14 @@ public class BeaconPressRight extends LinearOpMode {
 				} else {
 					Thread.sleep(3000);
 					//push button
-					mecanum.run73ND( -.2, 0, 0);
+					mecanum.run((float) .15, 0, 0);
 					Thread.sleep(1500);
 					mecanum.stop();
 
 					Thread.sleep(500);
 
 					//run back
-					while (range.in()[0] < distanceIn[0]) mecanum.run73ND(.2, 0, 0);
+					while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
 					mecanum.stop();
 				}
 			}

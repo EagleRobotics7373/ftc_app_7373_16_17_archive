@@ -48,8 +48,8 @@ import org.firstinspires.ftc.teamcode.ER7373.mechanics.Shooter;
 //import classes from our own library
 
 
-@TeleOp(name = "7373 Teleop", group = "Concept")
-@Disabled
+@TeleOp(name = "7373 Teleop", group = "7373")
+//@Disabled
 
 public class StateTeleop7373 extends LinearOpMode {
 
@@ -73,8 +73,8 @@ public class StateTeleop7373 extends LinearOpMode {
 
   //servo variable for the ball stop and its 2 positions
   Servo ballStop;
-  double closed = .4;
-  double open = 1;
+  double closed = 0;
+  double open = .9;
 
   //servo for cap ball lift
   Servo dropLift;
@@ -107,10 +107,14 @@ public class StateTeleop7373 extends LinearOpMode {
 
 
     //set all motors to their run modes
-    leftFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    leftRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    rightFront.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
-    rightRear.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+    leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    leftFront.setMaxSpeed(280*100);
+    leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    leftFront.setMaxSpeed(280*100);
+    rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    leftFront.setMaxSpeed(280*100);
+    rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    leftFront.setMaxSpeed(280*100);
     shooterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     shooterRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     intakem.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -123,7 +127,7 @@ public class StateTeleop7373 extends LinearOpMode {
     ballStop.setPosition(closed);
 
     //set servo to start position
-    dropLift.setPosition(0);
+    dropLift.setPosition(1);
 
 
     runtime.reset();
@@ -158,15 +162,26 @@ public class StateTeleop7373 extends LinearOpMode {
       }
       switch (gearstate) {
         case high:
-          mecanum.run((float) -Math.pow(gamepad1.left_stick_y, 3), (float) Math.pow(gamepad1.left_stick_x, 3), (float) Math.pow(gamepad1.right_stick_x, 3));
+          mecanum.run73(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
           break;
         case mid:
-          mecanum.runCoef((float) Math.pow(gamepad1.left_stick_y, 3), (float) Math.pow(gamepad1.left_stick_x, 3), (float) Math.pow(gamepad1.right_stick_x, 3), (float).5);
+          mecanum.run73(-.5*gamepad1.left_stick_y, .5*gamepad1.left_stick_x, .5*gamepad1.right_stick_x);
           break;
         case low:
-          mecanum.runCoef((float) Math.pow(gamepad1.left_stick_y, 3), (float) Math.pow(gamepad1.left_stick_x, 3), (float) Math.pow(gamepad1.right_stick_x, 3), (float).2);
+          if(gamepad1.left_bumper) {
+            mecanum.run73ND(0,0,.005);
+          } else if(gamepad1.right_bumper){
+            mecanum.run73ND(0,0,-.005);
+          } else {
+            mecanum.run73( -.25 * gamepad1.left_stick_y, .25 * gamepad1.left_stick_x,.1 * gamepad1.right_stick_x);
+          }
+          break;
+        default:
           break;
       }
+
+
+
 
 
       /**
@@ -236,11 +251,11 @@ public class StateTeleop7373 extends LinearOpMode {
 
 
       //code to run linear slide for cap ball
-      ballLift.runPower(gamepad2.right_stick_y);
+      ballLift.runPower(-gamepad2.right_stick_y);
 
       //code for the servos for the cap ball lift
       if(gamepad2.right_stick_button){
-        dropLift.setPosition(1);
+        dropLift.setPosition(.5);
       }
 
     }

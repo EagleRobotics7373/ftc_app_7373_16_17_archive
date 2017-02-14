@@ -59,6 +59,51 @@ public class Mecanum {
 
     }
 
+    public void run73(double x, double y, double z)
+    {
+        //set a deadzone
+        if(x <= .05 && x >= -.05) x = 0;
+        if(y <= .05 && y >= -.05) y = 0;
+        if(z <= .05 && z >= -.05) z = 0;
+
+        //calculate each wheel power and clip it
+        double powLF = x + y + z;
+        powLF = Range.clip(powLF, -1, 1);
+        double powLR = x - y + z;
+        powLR = Range.clip(powLR, -1, 1);
+        double powRF = x - y - z;
+        powRF = -Range.clip(powRF, -1, 1);
+        double powRR = x + y - z;
+        powRR = -Range.clip(powRR, -1, 1);
+
+        //send the power to each wheel
+        leftfront.setPower(powLF);
+        leftrear.setPower(powLR);
+        rightfront.setPower(powRF);
+        rightrear.setPower(powRR);
+
+    }
+
+    public void run73ND(double x, double y, double z)
+    {
+        //calculate each wheel power and clip it
+        double powLF = x + y + z;
+        powLF = Range.clip(powLF, -1, 1);
+        double powLR = x - y + z;
+        powLR = Range.clip(powLR, -1, 1);
+        double powRF = x - y - z;
+        powRF = -Range.clip(powRF, -1, 1);
+        double powRR = x + y - z;
+        powRR = -Range.clip(powRR, -1, 1);
+
+        //send the power to each wheel
+        leftfront.setPower(powLF);
+        leftrear.setPower(powLR);
+        rightfront.setPower(powRF);
+        rightrear.setPower(powRR);
+
+    }
+
     /**
     Method for running the mecanum wheels
     x is input for forward/reverse
