@@ -5,7 +5,7 @@ package org.firstinspires.ftc.teamcode.ER7373.sensors;
  */
     import android.graphics.Color;
 
-    import com.qualcomm.robotcore.hardware.ColorSensor;
+    //import com.qualcomm.robotcore.hardware.ColorSensor;
     import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
     import com.qualcomm.robotcore.hardware.I2cAddr;
     import com.qualcomm.robotcore.hardware.I2cController;
@@ -13,21 +13,6 @@ package org.firstinspires.ftc.teamcode.ER7373.sensors;
 
     import java.util.concurrent.locks.Lock;
 
-    /**
-     * This program is customized from decompiled ModernRoboticsColorSensor code.
-     *
-     * Since we can't register this class in the RC configuration.
-     * You need to manually create your object with this class.
-     *
-     * ColorSensor myPassiveCorlorSensor = new TyeeModernRoboticsColorSensor9915(cdim, 3);
-     *
-     * The port is where your second color sensor plugged in on the i2c module.
-     *
-     * The I2CAddress is hard coded to 0x42, you need to change it to yours.
-     *
-     * @author TEAM 9915 on 10/12/2015.
-     *
-     */
     public class MRColorRaw implements I2cController.I2cPortReadyCallback {
         private static volatile I2cAddr ADDRESS_I2C;
         private static final int ADDRESS_COMMAND = 0x03;

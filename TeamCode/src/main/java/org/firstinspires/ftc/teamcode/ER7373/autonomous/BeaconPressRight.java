@@ -153,7 +153,7 @@ public class BeaconPressRight extends LinearOpMode {
 				}
 
 			}
-			shooter.rpmRun(1200);
+			shooter.rpmRun(1100);
 			mecanum.run73ND( -.2,0,0);
 			Thread.sleep(500);
 

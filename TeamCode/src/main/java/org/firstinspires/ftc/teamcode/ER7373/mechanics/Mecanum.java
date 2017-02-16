@@ -77,9 +77,9 @@ public class Mecanum {
         powRR = -Range.clip(powRR, -1, 1);
 
         //send the power to each wheel
-        leftfront.setPower(powLF);
+        leftfront.setPower(.8*powLF);
         leftrear.setPower(powLR);
-        rightfront.setPower(powRF);
+        rightfront.setPower(.8*powRF);
         rightrear.setPower(powRR);
 
     }
@@ -97,9 +97,9 @@ public class Mecanum {
         powRR = -Range.clip(powRR, -1, 1);
 
         //send the power to each wheel
-        leftfront.setPower(powLF);
+        leftfront.setPower(.8*powLF);
         leftrear.setPower(powLR);
-        rightfront.setPower(powRF);
+        rightfront.setPower(.8*powRF);
         rightrear.setPower(powRR);
 
     }

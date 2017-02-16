@@ -76,7 +76,8 @@ public class StateTeleop7373 extends LinearOpMode {
   double closed = 0;
   double open = .9;
 
-  //servo for cap ball lift
+
+  //servos for cap ball lift
   Servo dropLift;
 
 
@@ -108,13 +109,13 @@ public class StateTeleop7373 extends LinearOpMode {
 
     //set all motors to their run modes
     leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    leftFront.setMaxSpeed(280*100);
+    //leftFront.setMaxSpeed(280*100);
     leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    leftFront.setMaxSpeed(280*100);
+    //leftFront.setMaxSpeed(280*100);
     rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    leftFront.setMaxSpeed(280*100);
+    //leftFront.setMaxSpeed(280*100);
     rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    leftFront.setMaxSpeed(280*100);
+    //leftFront.setMaxSpeed(280*100);
     shooterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     shooterRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     intakem.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
@@ -152,7 +153,7 @@ public class StateTeleop7373 extends LinearOpMode {
     waitForStart();
 
     while(opModeIsActive()) {
-      //call mecanum run method to send power values to the drivetrain from the controllers
+      /*call mecanum run method to send power values to the drivetrain from the controllers
       if(gamepad1.dpad_up){
         gearstate = gear.high;
       } else if(gamepad1.dpad_left || gamepad1.dpad_right){
@@ -179,9 +180,15 @@ public class StateTeleop7373 extends LinearOpMode {
         default:
           break;
       }
+      */
 
-
-
+      if(gamepad1.left_bumper) {
+        mecanum.run73ND(0,0,.001);
+      } else if(gamepad1.right_bumper){
+        mecanum.run73ND(0,0,-.001);
+      } else {
+        mecanum.run73(-.5*gamepad1.left_stick_y, .5*gamepad1.left_stick_x, .5*gamepad1.right_stick_x);
+      }
 
 
       /**
@@ -192,9 +199,9 @@ public class StateTeleop7373 extends LinearOpMode {
        * Left trigger releases
        */
       if (gamepad2.right_bumper) {
-        intake.runPower((float) .75);
+        intake.runPower(1);
       } else if (gamepad2.left_bumper) {
-        intake.runPower((float) -.75);
+        intake.runPower( -1);
       } else {
         intake.stop();
       }
@@ -222,11 +229,11 @@ public class StateTeleop7373 extends LinearOpMode {
        */
       if(!stoptoggle) {
         if (gamepad2.a) {
-          shooter.rpmRun(1100);
+          shooter.rpmRun(850);
           stoptoggle = true;
           //shooterPower = true;
         } else if (gamepad2.x) {
-          shooter.rpmRun(1300);
+          shooter.rpmRun(100);
           stoptoggle = true;
           //shooterPower = true;
         } else {
@@ -257,6 +264,9 @@ public class StateTeleop7373 extends LinearOpMode {
       if(gamepad2.right_stick_button){
         dropLift.setPosition(.5);
       }
+
+
+      telemetry.update();
 
     }
   }
