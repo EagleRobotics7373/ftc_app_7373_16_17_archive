@@ -150,12 +150,6 @@ public class Q2AutoShoot11364 extends LinearOpMode {
     mecanum.run((float) -.75,0,0);
     Thread.sleep(500);
 
-    mecanum.run(0,(float) -1,0);
-    Thread.sleep(1000);
-
-    mecanum.run(0,0,(float) 1);
-    Thread.sleep(1000);
-
 
 
     mecanum.stop();

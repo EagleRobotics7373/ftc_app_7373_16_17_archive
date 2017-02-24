@@ -74,11 +74,18 @@ public class StateTeleop7373 extends LinearOpMode {
   //servo variable for the ball stop and its 2 positions
   Servo ballStop;
   double closed = 0;
-  double open = .9;
+  double open = 1;
 
 
   //servos for cap ball lift
   Servo dropLift;
+  Servo ballHold;
+
+  double closed2 = 0;
+  double open2 = 1;
+
+  double closed3 = .4;
+  double open3 = .15;
 
 
   //Logic Variables8
@@ -123,12 +130,14 @@ public class StateTeleop7373 extends LinearOpMode {
     //add servo to hardware map
     ballStop = hardwareMap.servo.get("ballstop");
     dropLift = hardwareMap.servo.get("rightlift");
+    ballHold = hardwareMap.servo.get("ballhold");
 
     //set servo to closed position
+    ballHold.setPosition(closed2);
     ballStop.setPosition(closed);
 
     //set servo to start position
-    dropLift.setPosition(1);
+    dropLift.setPosition(closed3);
 
 
     runtime.reset();
@@ -153,7 +162,8 @@ public class StateTeleop7373 extends LinearOpMode {
     waitForStart();
 
     while(opModeIsActive()) {
-      /*call mecanum run method to send power values to the drivetrain from the controllers
+
+      //call mecanum run method to send power values to the drivetrain from the controllers
       if(gamepad1.dpad_up){
         gearstate = gear.high;
       } else if(gamepad1.dpad_left || gamepad1.dpad_right){
@@ -161,12 +171,25 @@ public class StateTeleop7373 extends LinearOpMode {
       } else if(gamepad1.dpad_down){
         gearstate = gear.low;
       }
+
       switch (gearstate) {
         case high:
-          mecanum.run73(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+          if(gamepad1.left_bumper) {
+            mecanum.run73ND(0,0,.005);
+          } else if(gamepad1.right_bumper){
+            mecanum.run73ND(0,0,-.005);
+          } else {
+            mecanum.run73(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+          }
           break;
         case mid:
-          mecanum.run73(-.5*gamepad1.left_stick_y, .5*gamepad1.left_stick_x, .5*gamepad1.right_stick_x);
+          if(gamepad1.left_bumper) {
+            mecanum.run73ND(0,0,.005);
+          } else if(gamepad1.right_bumper){
+            mecanum.run73ND(0,0,-.005);
+          } else {
+            mecanum.run73(-.5 * gamepad1.left_stick_y, .5 * gamepad1.left_stick_x, .5 * gamepad1.right_stick_x);
+          }
           break;
         case low:
           if(gamepad1.left_bumper) {
@@ -179,15 +202,6 @@ public class StateTeleop7373 extends LinearOpMode {
           break;
         default:
           break;
-      }
-      */
-
-      if(gamepad1.left_bumper) {
-        mecanum.run73ND(0,0,.001);
-      } else if(gamepad1.right_bumper){
-        mecanum.run73ND(0,0,-.001);
-      } else {
-        mecanum.run73(-.5*gamepad1.left_stick_y, .5*gamepad1.left_stick_x, .5*gamepad1.right_stick_x);
       }
 
 
@@ -233,7 +247,7 @@ public class StateTeleop7373 extends LinearOpMode {
           stoptoggle = true;
           //shooterPower = true;
         } else if (gamepad2.x) {
-          shooter.rpmRun(100);
+          shooter.rpmRun(1000);
           stoptoggle = true;
           //shooterPower = true;
         } else {
@@ -262,12 +276,15 @@ public class StateTeleop7373 extends LinearOpMode {
 
       //code for the servos for the cap ball lift
       if(gamepad2.right_stick_button){
-        dropLift.setPosition(.5);
+        dropLift.setPosition(open3);
+        ballHold.setPosition(.5);
       }
+
+      if(gamepad2.right_trigger > .05) ballHold.setPosition(open2);
+      if(gamepad2.left_trigger > .05) ballHold.setPosition(closed2);
 
 
       telemetry.update();
-
     }
   }
 }

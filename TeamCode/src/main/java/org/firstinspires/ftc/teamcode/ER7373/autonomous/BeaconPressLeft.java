@@ -30,28 +30,47 @@ CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
 TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
-package org.firstinspires.ftc.teamcode.ER11364.autonomous;
-
-import android.content.res.Resources;
+package org.firstinspires.ftc.teamcode.ER7373.autonomous;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
+import com.qualcomm.robotcore.hardware.Servo;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.ER7373.functions.ArrayCompare;
 import org.firstinspires.ftc.teamcode.ER7373.mechanics.Mecanum;
+import org.firstinspires.ftc.teamcode.ER7373.mechanics.Shooter;
 import org.firstinspires.ftc.teamcode.ER7373.sensors.MRColorRaw;
 import org.firstinspires.ftc.teamcode.ER7373.sensors.MRRange;
 
 
-@Autonomous(name="BeaconPressRed11364", group="Auto 11364")
+@Autonomous(name="BeaconPressRed7373", group="Auto 7373")
 //@Disabled
-public class BeaconPressRed extends LinearOpMode {
+public class BeaconPressLeft extends LinearOpMode {
 
 	/* Declare OpMode members. */
 	private ElapsedTime runtime = new ElapsedTime();
+
+	//servos
+	//servo variable for the ball stop and its 2 positions
+	Servo ballStop;
+	double closed = 0;
+	double open = 1;
+
+
+	//servos for cap ball lift
+	Servo dropLift;
+	Servo ballHold;
+
+	double closed2 = 0;
+	double open2 = 1;
+
+	//booelan for beacon press
+	boolean beacon1 = false;
+	boolean beacon2 = false;
 
 	//variables
 	public enum followline {on, off}
@@ -62,8 +81,7 @@ public class BeaconPressRed extends LinearOpMode {
 	followline linestat;
 
 	ArrayCompare array = new ArrayCompare();
-
-	//gray floor
+	//adjusted for gray floor
 	public static final int[] floorRef = {2, 2, 2, 2};
 	public static final double[] distanceIn = {4, 0};
 
@@ -74,19 +92,42 @@ public class BeaconPressRed extends LinearOpMode {
 		telemetry.addData("Status", "Initialized");
 		telemetry.update();
 
+		//add servo to hardware map
+		ballStop = hardwareMap.servo.get("ballstop");
+		dropLift = hardwareMap.servo.get("rightlift");
+		ballHold = hardwareMap.servo.get("ballhold");
+
+		//set servo to closed position
+		ballHold.setPosition(closed2);
+		ballStop.setPosition(open);
+
+		//set servo to start position
+		dropLift.setPosition(.7);
+
+		DcMotor shooterLeft;
+		DcMotor shooterRight;
+		shooterLeft = hardwareMap.dcMotor.get("shooterleft");
+		shooterRight = hardwareMap.dcMotor.get("shooterright");
+		shooterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		shooterRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+		Shooter shooter = new Shooter(shooterLeft, shooterRight);
+
+
 		//create objects for drive train and 2 color sensors and range finder
 		Mecanum mecanum = new Mecanum(hardwareMap.dcMotor.get("leftfront"),
 				hardwareMap.dcMotor.get("leftrear"),
 				hardwareMap.dcMotor.get("rightfront"),
 				hardwareMap.dcMotor.get("rightrear"));
 
+		DcMotor intakem = hardwareMap.dcMotor.get("intake");
+
 		//create obj for cdim
 		DeviceInterfaceModule dim = hardwareMap.deviceInterfaceModule.get("dim");
 
 		//create color sensors
-		MRColorRaw colorLeft = new MRColorRaw(dim, 2, 0x3c);
-		MRColorRaw colorRight = new MRColorRaw(dim, 1, 0x2c);
-		MRColorRaw colorFloor = new MRColorRaw(dim, 0, 0x1c);
+		MRColorRaw colorLeft = new MRColorRaw(dim, 5, 0x4c);
+		MRColorRaw colorRight = new MRColorRaw(dim, 3, 0x9c);
+		MRColorRaw colorFloor = new MRColorRaw(dim, 2, 0x1c);
 
 		//create range sensor
 		MRRange range = new MRRange(hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range"));
@@ -102,17 +143,19 @@ public class BeaconPressRed extends LinearOpMode {
 
 			//Drive Straight
 			while (colorFloor.rgbc()[0] <= floorRef[0] && opModeIsActive()) {
-				mecanum.run((float) .3, 0, 0);
+				mecanum.run73ND((float) -.3, 0, 0);
 			}
 
 			mecanum.stop();
-			Thread.sleep(500);
+			Thread.sleep(1000);
 
 			telemetry.addData("Status: ", "Found Line");
 			telemetry.update();
 
 			//line follow code
 			while (range.in()[0] > distanceIn[0] && opModeIsActive()) {
+
+				Thread.sleep(100);
 				//check status of position
 				if (colorFloor.rgbc()[0] > floorRef[0]) {
 					linestat = followline.on;
@@ -128,127 +171,110 @@ public class BeaconPressRed extends LinearOpMode {
 
 				switch (linestat) {
 					case on:
-						mecanum.run((float) .15, 0, 0);
+						mecanum.run73ND((float) -.2, 0, 0);
+						//Thread.sleep(50);
 						break;
 					case off:
 						if (team == teamColor.red) {
-							mecanum.run(0, 0, (float) .2);
+							mecanum.run73ND(0, 0, -.15);
 						} else if (team == teamColor.blue) {
-							mecanum.run(0, 0, (float) -.2);
+							mecanum.run73ND(0, 0, .15);
 						}
 						break;
 
 				}
 
 			}
-			mecanum.run((float) .15,0,0);
-			Thread.sleep(500);
+			shooter.rpmRun(1000);
+			mecanum.run73ND( -.2,0,0);
+			Thread.sleep(750);
 
 			mecanum.stop();
 
 
 			//interact with beacon
-			telemetry.addData("Status: ", "Checking Beacon");
+			telemetry.addData("Status: ", "Hit Beacon");
 			telemetry.update();
 
-			Thread.sleep(1000);
-
 			//run back
-			while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
+			while (range.in()[0] < distanceIn[0]+2 && opModeIsActive()) mecanum.run73ND( .2, 0, 0);
+			mecanum.stop();
+			Thread.sleep(500);
+
+			intakem.setPower(1);
+			Thread.sleep(2000);
+			intakem.setPower(0);
+			shooter.rpmRun(0);
+
+
+			while(!beacon1 && opModeIsActive()) {
+				if (teamColor.red == team) {
+					if (colorLeft.rgbc()[0] > colorLeft.rgbc()[2] && colorRight.rgbc()[0] > colorRight.rgbc()[2]) {
+						beacon1 = true;
+
+					} else {
+						//push button
+						mecanum.run73ND(-.2, 0, 0);
+						Thread.sleep(1500);
+						mecanum.stop();
+
+						Thread.sleep(500);
+
+						//run back
+						while (range.in()[0] < distanceIn[0] && opModeIsActive())
+							mecanum.run73ND((float) .2, 0, 0);
+						mecanum.stop();
+						Thread.sleep(1500);
+					}
+				} else if (teamColor.blue == team) {
+					if (colorLeft.rgbc()[2] > colorLeft.rgbc()[0] && colorRight.rgbc()[2] > colorRight.rgbc()[0]) {
+						beacon1 = true;
+					} else {
+						Thread.sleep(1000);
+						//push button
+						mecanum.run73ND((float) -.2, 0, 0);
+						Thread.sleep(1500);
+						mecanum.stop();
+
+						Thread.sleep(500);
+
+						//run back
+						while (range.in()[0] < distanceIn[0] && opModeIsActive())
+							mecanum.run73ND((float) .2, 0, 0);
+						mecanum.stop();
+						Thread.sleep(1500);
+					}
+				}
+			}
+
+			while (range.in()[0] < distanceIn[0] + 8 && opModeIsActive())
+				mecanum.run73ND((float) .2, 0, 0);
 			mecanum.stop();
 
-			if (teamColor.red == team) {
-				if (colorLeft.rgbc()[0] > colorLeft.rgbc()[2] && colorRight.rgbc()[0] > colorRight.rgbc()[2]) {
-
-				} else {
-					Thread.sleep(4000);
-					//push button
-					mecanum.run((float) .15, 0, 0);
-					Thread.sleep(1500);
-					mecanum.stop();
-
-					Thread.sleep(500);
-
-					//run back
-					while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
-					mecanum.stop();
-				}
-			} else if (teamColor.blue == team) {
-				if (colorLeft.rgbc()[2] > colorLeft.rgbc()[0] && colorRight.rgbc()[2] > colorRight.rgbc()[0]) {
-
-				} else {
-					Thread.sleep(3000);
-					//push button
-					mecanum.run((float) .15, 0, 0);
-					Thread.sleep(1500);
-					mecanum.stop();
-
-					Thread.sleep(500);
-
-					//run back
-					while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
-					mecanum.stop();
-				}
-			}
-
-			if (teamColor.red == team) {
-				if (colorLeft.rgbc()[0] > colorLeft.rgbc()[2] && colorRight.rgbc()[0] > colorRight.rgbc()[2]) {
-
-				} else {
-					Thread.sleep(4000);
-					//push button
-					mecanum.run((float) .15, 0, 0);
-					Thread.sleep(1500);
-					mecanum.stop();
-
-					Thread.sleep(500);
-
-					//run back
-					while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
-					mecanum.stop();
-				}
-			} else if (teamColor.blue == team) {
-				if (colorLeft.rgbc()[2] > colorLeft.rgbc()[0] && colorRight.rgbc()[2] > colorRight.rgbc()[0]) {
-
-				} else {
-					Thread.sleep(3000);
-					//push button
-					mecanum.run((float) .15, 0, 0);
-					Thread.sleep(1500);
-					mecanum.stop();
-
-					Thread.sleep(500);
-
-					//run back
-					while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
-					mecanum.stop();
-				}
-			}
-
-			/**slide left or right depending on the team color
+			//slide left or right depending on the team color
 			if (team == teamColor.red) {
-				mecanum.run(0, (float) .4, 0);
+				mecanum.run73ND(0, -.5, 0);
 				Thread.sleep(2000);
 
-				while (array.lessThanEqual(colorFloor.rgbc(), floorRef)) {
-					mecanum.run(0, (float) .4, 0);
+				while (array.lessThanEqual(colorFloor.rgbc(), floorRef) && opModeIsActive()) {
+					mecanum.run73ND(0, -.5, 0);
 				}
 				mecanum.stop();
 				Thread.sleep(500);
-				while (array.lessThanEqual(colorFloor.rgbc(), floorRef)) {
-					mecanum.run(0, (float) -.2, (float)0);
+				while (array.lessThanEqual(colorFloor.rgbc(), floorRef) && opModeIsActive()) {
+					mecanum.run73ND(0, .5, 0);
 				}
 
 			} else if (team == teamColor.blue) {
-				mecanum.run(0, (float) -.4, 0);
+				mecanum.run73ND(0, .5, 0);
 				Thread.sleep(2000);
-				while (array.lessThanEqual(colorFloor.rgbc(), floorRef)) {
-					mecanum.run(0, (float) -.4, 0);
+				while (array.lessThanEqual(colorFloor.rgbc(), floorRef) && opModeIsActive()) {
+					mecanum.run73ND(0, .5, 0);
 				}
 				mecanum.stop();
 				Thread.sleep(500);
-				while (array.lessThanEqual(colorFloor.rgbc(), floorRef)) {
-					mecanum.run(0, (float) .2, 0);
+				while (array.lessThanEqual(colorFloor.rgbc(), floorRef) && opModeIsActive()) {
+					mecanum.run73ND(0, -.4, 0);
 				}
 
 			}
@@ -268,22 +294,18 @@ public class BeaconPressRed extends LinearOpMode {
 
 				switch (linestat) {
 					case on:
-						mecanum.run((float) .15, 0, 0);
+						mecanum.run73ND( -.2, 0, 0);
 						break;
 					case off:
-						mecanum.run((float) .15, 0, 0);
+						mecanum.run73ND( -.2, 0, 0);
 						break;
 
 				}
 
 			}
 
-			mecanum.run((float) .15,0,0);
+			mecanum.run((float) -.2,0,0);
 			Thread.sleep(500);
-
-			mecanum.stop();
-
-
 
 			mecanum.stop();
 
@@ -291,82 +313,54 @@ public class BeaconPressRed extends LinearOpMode {
 			//interact with beacon
 			telemetry.addData("Status: ", "Checking Beacon");
 			telemetry.update();
-			Thread.sleep(2000);
-
-			Thread.sleep(500);
 
 			//run back
-			while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
+			while (range.in()[0] < distanceIn[0] && opModeIsActive()) mecanum.run73ND( .2, 0, 0);
 			mecanum.stop();
 
-			if (teamColor.red == team) {
-				if (colorLeft.rgbc()[0] > colorLeft.rgbc()[2] && colorRight.rgbc()[0] > colorRight.rgbc()[2]) {
+			while(!beacon2 && opModeIsActive()) {
+				if (teamColor.red == team) {
+					if (colorLeft.rgbc()[0] > colorLeft.rgbc()[2] && colorRight.rgbc()[0] > colorRight.rgbc()[2]) {
+						beacon2 = true;
+					} else {
+						Thread.sleep(3000);
+						//push button
+						mecanum.run73ND(-.2, 0, 0);
+						Thread.sleep(1500);
+						mecanum.stop();
 
-				} else {
-					Thread.sleep(3000);
-					//push button
-					mecanum.run((float) .15, 0, 0);
-					Thread.sleep(1500);
-					mecanum.stop();
+						Thread.sleep(500);
 
-					Thread.sleep(500);
+						//run back
+						while (range.in()[0] < distanceIn[0] && opModeIsActive())
+							mecanum.run73ND(.2, 0, 0);
+						mecanum.stop();
+					}
+				} else if (teamColor.blue == team) {
+					if (colorLeft.rgbc()[2] > colorLeft.rgbc()[0] && colorRight.rgbc()[2] > colorRight.rgbc()[0]) {
+						beacon2 = true;
+					} else {
+						Thread.sleep(3000);
+						//push button
+						mecanum.run73ND(-.2, 0, 0);
+						Thread.sleep(1500);
+						mecanum.stop();
 
-					//run back
-					while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
-					mecanum.stop();
+						Thread.sleep(500);
+
+						//run back
+						while (range.in()[0] < distanceIn[0] && opModeIsActive())
+							mecanum.run73ND(.2, 0, 0);
+						mecanum.stop();
+					}
 				}
-			} else if (teamColor.blue == team) {
-				if (colorLeft.rgbc()[2] > colorLeft.rgbc()[0] && colorRight.rgbc()[2] > colorRight.rgbc()[0]) {
-
-				} else {
-					Thread.sleep(3000);
-					//push button
-					mecanum.run((float) .15, 0, 0);
-					Thread.sleep(1500);
-					mecanum.stop();
-
-					Thread.sleep(500);
-
-					//run back
-					while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
-					mecanum.stop();
-				}
+				Thread.sleep(1000);
 			}
 
-			if (teamColor.red == team) {
-				if (colorLeft.rgbc()[0] > colorLeft.rgbc()[2] && colorRight.rgbc()[0] > colorRight.rgbc()[2]) {
+			while (range.in()[0] < distanceIn[0] && opModeIsActive())
+				mecanum.run73ND(.2, 0, 0);
+			mecanum.stop();
 
-				} else {
-					Thread.sleep(4000);
-					//push button
-					mecanum.run((float) .15, 0, 0);
-					Thread.sleep(1500);
-					mecanum.stop();
-
-					Thread.sleep(500);
-
-					//run back
-					while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
-					mecanum.stop();
-				}
-			} else if (teamColor.blue == team) {
-				if (colorLeft.rgbc()[2] > colorLeft.rgbc()[0] && colorRight.rgbc()[2] > colorRight.rgbc()[0]) {
-
-				} else {
-					Thread.sleep(3000);
-					//push button
-					mecanum.run((float) .15, 0, 0);
-					Thread.sleep(1500);
-					mecanum.stop();
-
-					Thread.sleep(500);
-
-					//run back
-					while (range.in()[0] < distanceIn[0]) mecanum.run((float) -.3, 0, 0);
-					mecanum.stop();
-				}
-			}
-			 */
 			break;
 		}
 

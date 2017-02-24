@@ -60,7 +60,9 @@ public class BeaconPressBlue extends LinearOpMode {
 	followline linestat;
 
 	ArrayCompare array = new ArrayCompare();
-	public static final int[] floorRef = {0, 0, 0, 0};
+
+	//gray floor
+	public static final int[] floorRef = {2, 2, 2, 2};
 	public static final double[] distanceIn = {4, 0};
 
 
@@ -132,9 +134,9 @@ public class BeaconPressBlue extends LinearOpMode {
 						break;
 					case off:
 						if (team == teamColor.red) {
-							mecanum.run(0, 0, (float) .3);
+							mecanum.run(0, 0, (float) .2);
 						} else if (team == teamColor.blue) {
-							mecanum.run(0, 0, (float) -.3);
+							mecanum.run(0, 0, (float) -.2);
 						}
 						break;
 
@@ -191,6 +193,7 @@ public class BeaconPressBlue extends LinearOpMode {
 				}
 			}
 
+			/**
 			//slide left or right depending on the team color
 			if (team == teamColor.red) {
 				mecanum.run(0, (float) .4, 0);
@@ -298,6 +301,7 @@ public class BeaconPressBlue extends LinearOpMode {
 					mecanum.stop();
 				}
 			}
+			 */
 			break;
 		}
 

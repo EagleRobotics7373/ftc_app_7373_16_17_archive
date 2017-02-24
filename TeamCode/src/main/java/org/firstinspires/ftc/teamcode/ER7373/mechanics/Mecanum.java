@@ -3,10 +3,14 @@ package org.firstinspires.ftc.teamcode.ER7373.mechanics;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.util.Range;
 
+import java.lang.Math;
+
 /**
  * Created by Jordan Moss on 9/24/2016.
  */
 public class Mecanum {
+    // constants
+    private static final double pi4 = Math.PI/4;
     //create parameter variables for each motor
     private DcMotor leftfront;
     private DcMotor leftrear;
@@ -14,11 +18,11 @@ public class Mecanum {
     private DcMotor rightrear;
 
     //drive power values
-    float powLF;
-    float powLR;
-    float powRF;
-    float powRR;
-    private float[] power = new float[4];
+    private double powLF;
+    private double powLR;
+    private double powRF;
+    private double powRR;
+    private double[] power = new double[4];
 
     //constructor for mecanum object with 4 parameters of each motor on the drive train
     public Mecanum(DcMotor lf, DcMotor lr, DcMotor rf, DcMotor rr){
@@ -34,6 +38,8 @@ public class Mecanum {
     y is input for left/right
     z is input for rotation
      */
+
+    //general form to run meacanum wheels with a deadband
     public void run(float x, float y, float z)
     {
         //set a deadzone
@@ -54,11 +60,17 @@ public class Mecanum {
         //send the power to each wheel
         leftfront.setPower(powLF);
         leftrear.setPower(powLR);
-        rightfront.setPower(powRF);
-        rightrear.setPower(powRR);
+        rightfront.setPower(.8*powRF);
+        rightrear.setPower(.8*powRR);
 
     }
 
+
+
+    //method to run 7373 meacnum wheels with a deadband
+    //x is input for forward/reverse
+    //y is input for left/right
+    //z is input for rotation
     public void run73(double x, double y, double z)
     {
         //set a deadzone
@@ -77,13 +89,17 @@ public class Mecanum {
         powRR = -Range.clip(powRR, -1, 1);
 
         //send the power to each wheel
-        leftfront.setPower(.8*powLF);
+        leftfront.setPower(powLF);
         leftrear.setPower(powLR);
-        rightfront.setPower(.8*powRF);
+        rightfront.setPower(powRF);
         rightrear.setPower(powRR);
 
     }
 
+    //method to run 7373 meacnum wheels without a deadband
+    //x is input for forward/reverse
+    //y is input for left/right
+    //z is input for rotation
     public void run73ND(double x, double y, double z)
     {
         //calculate each wheel power and clip it
@@ -97,18 +113,18 @@ public class Mecanum {
         powRR = -Range.clip(powRR, -1, 1);
 
         //send the power to each wheel
-        leftfront.setPower(.8*powLF);
+        leftfront.setPower(powLF);
         leftrear.setPower(powLR);
-        rightfront.setPower(.8*powRF);
+        rightfront.setPower(powRF);
         rightrear.setPower(powRR);
 
     }
 
     /**
-    Method for running the mecanum wheels
-    x is input for forward/reverse
-    y is input for left/right
-    z is input for rotation
+     Method for running the mecanum wheels
+     x is input for forward/reverse
+     y is input for left/right
+     z is input for rotation
      k is coef for drive
      */
     public void runCoef(float x, float y, float z, float k)
@@ -131,7 +147,7 @@ public class Mecanum {
     }
 
     //return drive vals
-    public float[] runVal(){
+    public double[] runVal(){
         //send the power to each wheel
         leftfront.setPower(powLF);
         power[0] = powLF;
