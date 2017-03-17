@@ -36,8 +36,8 @@ package org.firstinspires.ftc.teamcode.ER7373.sensors;
         private volatile int g;
         private final int h;
 
-        public MRColorRaw(DeviceInterfaceModule deviceInterfaceModule, int physicalPort, int a) {
-            ADDRESS_I2C = I2cAddr.create8bit(a);
+        public MRColorRaw(DeviceInterfaceModule deviceInterfaceModule, int physicalPort, int addr) {
+            ADDRESS_I2C = I2cAddr.create8bit(addr);
             this.f = SATTE.READ_MODE;
             this.g = 0;
             this.a = deviceInterfaceModule;
@@ -55,14 +55,15 @@ package org.firstinspires.ftc.teamcode.ER7373.sensors;
         public int red() {
             return this.a(OFFSET_RED_READING);
         }
+        public int redRaw() { return this.a(0x0A);}
 
-        public int green() {
-            return this.a(OFFSET_GREEN_READING);
-        }
+        public int green() {return this.a(OFFSET_GREEN_READING);}
+        public int greenRaw() { return this.a(0x0B);}
 
         public int blue() {
             return this.a(OFFSET_BLUE_READING);
         }
+        public int blueRaw() { return this.a(0x0C);}
 
         public int alpha() {
             return this.a(OFFSET_ALPHA_VALUE);
@@ -75,6 +76,14 @@ package org.firstinspires.ftc.teamcode.ER7373.sensors;
             rgbc[2] = blue();
             rgbc[3] = alpha();
             return rgbc;
+        }
+
+        public int[] rgbRaw(){
+            int[] rgb = new int[3];
+            rgb[0] = this.redRaw();
+            rgb[1] = this.greenRaw();
+            rgb[2] = this.blueRaw();
+            return rgb;
         }
 
         public int argb() {

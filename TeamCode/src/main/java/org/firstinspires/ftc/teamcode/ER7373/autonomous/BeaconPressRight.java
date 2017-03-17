@@ -73,17 +73,20 @@ public class BeaconPressRight extends LinearOpMode {
 	boolean beacon2 = false;
 
 	//variables
-	public enum followline {on, off}
+	public enum followline {
+		on, off
+	}
 
 	public enum teamColor {red, blue}
+
 	teamColor team = teamColor.blue;
 
 	followline linestat;
 
 	ArrayCompare array = new ArrayCompare();
 	//adjusted for the gray floor
-	public static final int[] floorRef = {2, 2, 2, 2};
-	public static final double[] distanceIn = {4, 0};
+	public int[] floorRef = new int[4];
+	public final double[] distanceIn = {4, 0};
 
 
 	@Override
@@ -132,6 +135,12 @@ public class BeaconPressRight extends LinearOpMode {
 		//set servo to start position
 		dropLift.setPosition(.7);
 
+		//get the reference value for the floor
+		floorRef = colorFloor.rgbc();
+		for (int i = 0; i < floorRef.length; i++) {
+			floorRef[i]++;
+		}
+
 		//wait for start of op mode
 		waitForStart();
 		runtime.reset();
@@ -148,19 +157,21 @@ public class BeaconPressRight extends LinearOpMode {
 			//Drive Straight
 			while (colorFloor.rgbc()[0] <= floorRef[0] && opModeIsActive()) {
 				mecanum.run73ND((float) -.3, 0, 0);
+
+				//sleep 33 ms or the time it takes to get new data from the sensor
+				Thread.sleep(33);
 			}
-
-			mecanum.stop();
-			Thread.sleep(1000);
-
-			mecanum.stop();
 
 			telemetry.addData("Status: ", "Found Line");
 			telemetry.update();
 
+			mecanum.stop();
+			Thread.sleep(1000);
+
+
 			//line follow code
 			while (range.in()[0] > distanceIn[0] && opModeIsActive()) {
-				Thread.sleep(100);
+				Thread.sleep(33);
 				//check status of position
 				if (colorFloor.rgbc()[0] > floorRef[0]) {
 					linestat = followline.on;
@@ -189,191 +200,14 @@ public class BeaconPressRight extends LinearOpMode {
 				}
 
 			}
-			shooter.rpmRun(1000);
-			mecanum.run73ND( -.2,0,0);
-			Thread.sleep(500);
 
-			mecanum.stop();
-
-
-			//interact with beacon
-			telemetry.addData("Status: ", "Hit Beacon");
-			telemetry.update();
-
-			//run back
-			while (range.in()[0] < distanceIn[0] + 3 && opModeIsActive()) mecanum.run73ND( .2, 0, 0);
-			mecanum.stop();
-
-			intakem.setPower(1);
-			Thread.sleep(2000);
-			intakem.setPower(0);
-			shooter.rpmRun(0);
-
-			while(!beacon1 && opModeIsActive()) {
-				if (teamColor.red == team) {
-					if (colorLeft.rgbc()[0] > colorLeft.rgbc()[2] && colorRight.rgbc()[0] > colorRight.rgbc()[2]) {
-						beacon1 = true;
-
-					} else {
-						//push button
-						mecanum.run73ND(-.2, 0, 0);
-						Thread.sleep(1500);
-						mecanum.stop();
-
-						Thread.sleep(500);
-
-						//run back
-						while (range.in()[0] < distanceIn[0] && opModeIsActive())
-							mecanum.run73ND((float) .2, 0, 0);
-						mecanum.stop();
-					}
-				} else if (teamColor.blue == team) {
-					if (colorLeft.rgbc()[2] > colorLeft.rgbc()[0] && colorRight.rgbc()[2] > colorRight.rgbc()[0]) {
-						beacon1 = true;
-					} else {
-						Thread.sleep(1000);
-						//push button
-						mecanum.run73ND((float) -.2, 0, 0);
-						Thread.sleep(1500);
-						mecanum.stop();
-
-						Thread.sleep(500);
-
-						//run back
-						while (range.in()[0] < distanceIn[0] && opModeIsActive())
-							mecanum.run73ND((float) .2, 0, 0);
-						mecanum.stop();
-					}
-				}
-				Thread.sleep(1000);
-			}
-
-			//slide left or right depending on the team color
-			if (team == teamColor.red) {
-				mecanum.run73ND(0, -.35, 0);
-				Thread.sleep(2000);
-
-				while (array.lessThanEqual(colorFloor.rgbc(), floorRef) && opModeIsActive()) {
-					mecanum.run73ND(0, -.35, 0);
-				}
-				mecanum.stop();
-				Thread.sleep(500);
-				while (array.lessThanEqual(colorFloor.rgbc(), floorRef) && opModeIsActive()) {
-					mecanum.run73ND(0, .35, 0);
-				}
-
-			} else if (team == teamColor.blue) {
-				mecanum.run73ND(0, .5, 0);
-				Thread.sleep(2000);
-				while (array.lessThanEqual(colorFloor.rgbc(), floorRef) && opModeIsActive()) {
-					mecanum.run73ND(0, .5, 0);
-				}
-				mecanum.stop();
-				Thread.sleep(500);
-				while (array.lessThanEqual(colorFloor.rgbc(), floorRef) && opModeIsActive()) {
-					mecanum.run73ND(0, -.5, 0);
-				}
-
-			}
-
-			while (range.in()[0] > distanceIn[0] && opModeIsActive()) {
-				//check status of position
-				if (colorFloor.rgbc()[0] > floorRef[0]) {
-					linestat = followline.on;
-				} else {
-					linestat = followline.off;
-				}
-
-				//print enum state to telemetry
-				telemetry.addData("Line Stat: ", linestat.toString());
-				telemetry.addData("Range: ", range.in()[0] + " " + range.in()[1]);
-				telemetry.update();
-
-				switch (linestat) {
-					case on:
-						mecanum.run73ND( -.2, 0, 0);
-						break;
-					case off:
-						mecanum.run73ND( 0, 0, -.2);
-						break;
-
-				}
-
-			}
-
-			mecanum.run((float) -.2,0,0);
-			Thread.sleep(500);
-
-			mecanum.stop();
-
-
-
-			mecanum.stop();
-
-
-			//interact with beacon
-			telemetry.addData("Status: ", "Checking Beacon");
-			telemetry.update();
-			Thread.sleep(2000);
-
-			Thread.sleep(500);
-
-			//run back
-			while (range.in()[0] < distanceIn[0]) mecanum.run73ND( .5, 0, 0);
-			mecanum.stop();
-
-			while(!beacon2 && opModeIsActive()) {
-				if (teamColor.red == team) {
-					if (colorLeft.rgbc()[0] > colorLeft.rgbc()[2] && colorRight.rgbc()[0] > colorRight.rgbc()[2]) {
-						beacon2 = true;
-					} else {
-						Thread.sleep(3000);
-						//push button
-						mecanum.run73ND(-.2, 0, 0);
-						Thread.sleep(1500);
-						mecanum.stop();
-
-						Thread.sleep(500);
-
-						//run back
-						while (range.in()[0] < distanceIn[0] && opModeIsActive())
-							mecanum.run73ND(.2, 0, 0);
-						mecanum.stop();
-					}
-				} else if (teamColor.blue == team) {
-					if (colorLeft.rgbc()[2] > colorLeft.rgbc()[0] && colorRight.rgbc()[2] > colorRight.rgbc()[0]) {
-						beacon2 = true;
-					} else {
-						Thread.sleep(3000);
-						//push button
-						mecanum.run73ND(-.2, 0, 0);
-						Thread.sleep(1500);
-						mecanum.stop();
-
-						Thread.sleep(500);
-
-						//run back
-						while (range.in()[0] < distanceIn[0] && opModeIsActive())
-							mecanum.run73ND(.2, 0, 0);
-						mecanum.stop();
-					}
-				}
-				Thread.sleep(1000);
-			}
-
-
-			while (range.in()[0] < distanceIn[0] && opModeIsActive())
-				mecanum.run73ND(.2, 0, 0);
-			mecanum.stop();
-			break;
-		}
-
-
+			//#TODO: write code to hit button with the servos and then shoot
 
 
 		}
 
 	}
+}
 
 
 

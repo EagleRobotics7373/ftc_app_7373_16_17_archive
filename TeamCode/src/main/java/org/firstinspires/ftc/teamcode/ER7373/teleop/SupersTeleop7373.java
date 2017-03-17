@@ -33,7 +33,6 @@ package org.firstinspires.ftc.teamcode.ER7373.teleop;
 
 //import classes from the MR Library
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -43,15 +42,12 @@ import com.qualcomm.robotcore.util.ElapsedTime;
 import org.firstinspires.ftc.teamcode.ER7373.mechanics.Mecanum;
 import org.firstinspires.ftc.teamcode.ER7373.mechanics.Motor;
 import org.firstinspires.ftc.teamcode.ER7373.mechanics.Shooter;
-
-//import java classes
-//import classes from our own library
-
+import org.firstinspires.ftc.teamcode.ER7373.Global;
 
 @TeleOp(name = "7373 Teleop", group = "7373")
-@Disabled
+//@Disabled
 
-public class StateTeleop7373 extends LinearOpMode {
+public class SupersTeleop7373 extends LinearOpMode {
 
   private ElapsedTime runtime = new ElapsedTime();
 
@@ -73,23 +69,18 @@ public class StateTeleop7373 extends LinearOpMode {
 
   //servo variable for the ball stop and its 2 positions
   Servo ballStop;
-  double closed = 0;
-  double open = 1;
+  double closed = Global.BALL_STOP_CLOSED;
+  double open = Global.BALL_STOP_OPEN;
 
+  //servo for the back button pushers
+  Servo leftButtonPress;
+  Servo rightButtonPress;
+  double leftOutPos = Global.LEFT_BUTTONPRESS_OUT;
+  double rightOutPos = Global.RIGHT_BUTTONPRESS_OUT;
+  double leftInPos = Global.LEFT_BUTTONPRESS_IN;
+  double rightInPos = Global.RIGHT_BUTTONPRESS_IN;
 
-  //servos for cap ball lift
-  Servo dropLift;
-  Servo ballHold;
-
-  double closed2 = 0;
-  double open2 = 1;
-
-  double closed3 = .4;
-  double open3 = .15;
-
-
-  //Logic Variables8
-  boolean shooterPower = false;
+  //Logic Variables
   boolean stoptoggle = false;
 
   //enum for the gear
@@ -129,15 +120,9 @@ public class StateTeleop7373 extends LinearOpMode {
 
     //add servo to hardware map
     ballStop = hardwareMap.servo.get("ballstop");
-    dropLift = hardwareMap.servo.get("rightlift");
-    ballHold = hardwareMap.servo.get("ballhold");
 
     //set servo to closed position
-    ballHold.setPosition(closed2);
     ballStop.setPosition(closed);
-
-    //set servo to start position
-    dropLift.setPosition(closed3);
 
 
     runtime.reset();
@@ -174,33 +159,16 @@ public class StateTeleop7373 extends LinearOpMode {
 
       switch (gearstate) {
         case high:
-          if(gamepad1.left_bumper) {
-            mecanum.run73ND(0,0,.005);
-          } else if(gamepad1.right_bumper){
-            mecanum.run73ND(0,0,-.005);
-          } else {
             mecanum.run73(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
-          }
           break;
         case mid:
-          if(gamepad1.left_bumper) {
-            mecanum.run73ND(0,0,.005);
-          } else if(gamepad1.right_bumper){
-            mecanum.run73ND(0,0,-.005);
-          } else {
             mecanum.run73(-.5 * gamepad1.left_stick_y, .5 * gamepad1.left_stick_x, .5 * gamepad1.right_stick_x);
-          }
           break;
         case low:
-          if(gamepad1.left_bumper) {
-            mecanum.run73ND(0,0,.005);
-          } else if(gamepad1.right_bumper){
-            mecanum.run73ND(0,0,-.005);
-          } else {
             mecanum.run73( -.25 * gamepad1.left_stick_y, .25 * gamepad1.left_stick_x,.1 * gamepad1.right_stick_x);
-          }
           break;
         default:
+          mecanum.run73(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
           break;
       }
 
@@ -213,9 +181,9 @@ public class StateTeleop7373 extends LinearOpMode {
        * Left trigger releases
        */
       if (gamepad2.right_bumper) {
-        intake.runPower(1);
+        intake.runPower((float).75);
       } else if (gamepad2.left_bumper) {
-        intake.runPower( -1);
+        intake.runPower( (float)-.75);
       } else {
         intake.stop();
       }
@@ -243,15 +211,12 @@ public class StateTeleop7373 extends LinearOpMode {
        */
       if(!stoptoggle) {
         if (gamepad2.a) {
-          shooter.rpmRun(850);
+          shooter.rpmRun(Global.SHOOTERRPM);
           stoptoggle = true;
           //shooterPower = true;
         } else if (gamepad2.x) {
           shooter.rpmRun(1000);
           stoptoggle = true;
-          //shooterPower = true;
-        } else {
-          //shooterPower = false;
         }
       }
 
@@ -275,13 +240,12 @@ public class StateTeleop7373 extends LinearOpMode {
       ballLift.runPower(-gamepad2.right_stick_y);
 
       //code for the servos for the cap ball lift
-      if(gamepad2.right_stick_button){
-        dropLift.setPosition(open3);
-        ballHold.setPosition(.5);
-      }
 
-      if(gamepad2.right_trigger > .05) ballHold.setPosition(open2);
-      if(gamepad2.left_trigger > .05) ballHold.setPosition(closed2);
+
+      //code to run the button pressers
+      leftButtonPress.setPosition(gamepad1.left_trigger);
+      rightButtonPress.setPosition(gamepad1.right_trigger);
+
 
 
       telemetry.update();

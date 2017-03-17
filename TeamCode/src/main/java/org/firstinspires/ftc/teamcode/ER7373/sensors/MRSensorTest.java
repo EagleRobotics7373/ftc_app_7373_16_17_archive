@@ -51,15 +51,7 @@ public class MRSensorTest extends LinearOpMode {
 
   public void runOpMode() throws InterruptedException{
 
-
-      MRRange range = new MRRange(hardwareMap.get(ModernRoboticsI2cRangeSensor.class, "range"));
-
-
       MRColorRaw color = new MRColorRaw(hardwareMap.deviceInterfaceModule.get("dim"), 0, 0x1c);
-
-      MRColorRaw color2 = new MRColorRaw(hardwareMap.deviceInterfaceModule.get("dim"), 2, 0x8c);
-
-      MRColorRaw color3 = new MRColorRaw(hardwareMap.deviceInterfaceModule.get("dim"), 3, 0x4c);
 
 
     telemetry.addData("Status", "Initialized");
@@ -72,41 +64,19 @@ public class MRSensorTest extends LinearOpMode {
 
       telemetry.addData("Status", "Run Time: " + runtime.toString());
 
+       telemetry.addData("R: ", color.rgbRaw()[0]);
+
+       telemetry.addData("G: ", color.rgbRaw()[1]);
+
+       telemetry.addData("B: ", color.rgbRaw()[2]);
 
 
-       telemetry.addData("R: ", color.rgbc()[0]);
-
-       telemetry.addData("G: ", color.rgbc()[1]);
-
-       telemetry.addData("B: ", color.rgbc()[2]);
-
-       telemetry.addData("C: ", color.rgbc()[3]);
-
-
-
-        telemetry.addData("R2: ", color2.rgbc()[0]);
-
-        telemetry.addData("G2: ", color2.rgbc()[1]);
-
-        telemetry.addData("B2: ", color2.rgbc()[2]);
-
-        telemetry.addData("C2: ", color2.rgbc()[3]);
-
-
-        telemetry.addData("R3: ", color3.rgbc()[0]);
-
-        telemetry.addData("G3: ", color3.rgbc()[1]);
-
-        telemetry.addData("B3: ", color3.rgbc()[2]);
-
-        telemetry.addData("C3: ", color3.rgbc()[3]);
-
-
-       telemetry.addData("U: ", range.in()[0]);
-
-       telemetry.addData("O: ", range.in()[1]);
 
         telemetry.update();
+
+        //delay for 33 ms or the same time it takes to refresh data for the sensor
+
+        Thread.sleep(33);
 
      }
 
