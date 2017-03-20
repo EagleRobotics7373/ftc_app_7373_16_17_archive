@@ -45,7 +45,7 @@ import org.firstinspires.ftc.teamcode.ER7373.sensors.AdafruitRGBSensorObj;
 import org.firstinspires.ftc.teamcode.ER7373.sensors.MaxbotixRangeObj;
 
 
-@Autonomous(name="BeaconPressRight", group="Autonomous")
+@Autonomous(name="BeaconPressBlue", group="Autonomous")
 @Disabled
 public class BeaconPressRight extends LinearOpMode {
 

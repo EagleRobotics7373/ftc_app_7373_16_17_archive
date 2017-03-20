@@ -56,7 +56,7 @@ import org.firstinspires.ftc.teamcode.ER7373.mechanics.Motor;
  */
 
 @TeleOp(name="11364 Teleop Q2", group="11364")  // @Autonomous(...) is the other common choice
-//@Disabled
+@Disabled
 public class Q2Teleop11364Linear extends LinearOpMode {
 
     /* Declare OpMode members. */

@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package org.firstinspires.ftc.teamcode.ER7373.sensors;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cColorSensor;
@@ -45,7 +46,7 @@ import org.firstinspires.ftc.teamcode.ER7373.sensors.*;
  * Demonstrates empty OpMode
  */
 @Autonomous(name = "Concept: MR Test", group = "Concept")
-//@Disabled
+@Disabled
 public class MRSensorTest extends LinearOpMode {
   private ElapsedTime runtime = new ElapsedTime();
 

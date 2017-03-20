@@ -24,12 +24,12 @@ public class Global {
     //button presser positions
     public static final double LEFT_BUTTONPRESS_OUT = 1;
     public static final double LEFT_BUTTONPRESS_IN = 0;
-    public static final double RIGHT_BUTTONPRESS_OUT = 1;
-    public static final double RIGHT_BUTTONPRESS_IN = 0;
+    public static final double RIGHT_BUTTONPRESS_OUT = 0;
+    public static final double RIGHT_BUTTONPRESS_IN = 1;
 
     //servos for ball stop
-    public static final double BALL_STOP_CLOSED = 0;
-    public static final double BALL_STOP_OPEN = 1;
+    public static final double BALL_STOP_CLOSED = 1;
+    public static final double BALL_STOP_OPEN = 0;
 
     //
 

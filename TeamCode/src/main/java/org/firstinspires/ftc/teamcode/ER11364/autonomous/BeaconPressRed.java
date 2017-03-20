@@ -36,6 +36,7 @@ import android.content.res.Resources;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -47,7 +48,7 @@ import org.firstinspires.ftc.teamcode.ER7373.sensors.MRRange;
 
 
 @Autonomous(name="BeaconPressRed11364", group="Auto 11364")
-//@Disabled
+@Disabled
 public class BeaconPressRed extends LinearOpMode {
 
 	/* Declare OpMode members. */

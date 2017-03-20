@@ -91,7 +91,7 @@ public class SupersTeleop7373 extends LinearOpMode {
 
 
   @Override
-  public void runOpMode() {
+  public void runOpMode() throws InterruptedException {
     telemetry.addData("Status", "Initialized");
 
     //add all motors to the hardware map
@@ -107,22 +107,22 @@ public class SupersTeleop7373 extends LinearOpMode {
 
     //set all motors to their run modes
     leftFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    //leftFront.setMaxSpeed(280*100);
     leftRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    //leftFront.setMaxSpeed(280*100);
     rightFront.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    //leftFront.setMaxSpeed(280*100);
     rightRear.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
-    //leftFront.setMaxSpeed(280*100);
     shooterLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     shooterRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
     intakem.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
 
     //add servo to hardware map
     ballStop = hardwareMap.servo.get("ballstop");
+    leftButtonPress = hardwareMap.servo.get("left press");
+    rightButtonPress = hardwareMap.servo.get("right press");
 
     //set servo to closed position
     ballStop.setPosition(closed);
+    leftButtonPress.setPosition(leftInPos);
+    rightButtonPress.setPosition(rightInPos);
 
 
     runtime.reset();
@@ -159,16 +159,16 @@ public class SupersTeleop7373 extends LinearOpMode {
 
       switch (gearstate) {
         case high:
-            mecanum.run73(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+            mecanum.run73(gamepad1.left_stick_y, -gamepad1.right_stick_x, -gamepad1.left_stick_x);
           break;
         case mid:
-            mecanum.run73(-.5 * gamepad1.left_stick_y, .5 * gamepad1.left_stick_x, .5 * gamepad1.right_stick_x);
+            mecanum.run73(.5 * gamepad1.left_stick_y, -.5 * gamepad1.right_stick_x, -.5 * gamepad1.left_stick_x);
           break;
         case low:
-            mecanum.run73( -.25 * gamepad1.left_stick_y, .25 * gamepad1.left_stick_x,.1 * gamepad1.right_stick_x);
+            mecanum.run73( .25 * gamepad1.left_stick_y, -.1 * gamepad1.right_stick_x, -.25 * gamepad1.left_stick_x);
           break;
         default:
-          mecanum.run73(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
+          mecanum.run73(gamepad1.left_stick_y, -gamepad1.right_stick_x , -gamepad1.left_stick_x);
           break;
       }
 
@@ -244,11 +244,12 @@ public class SupersTeleop7373 extends LinearOpMode {
 
       //code to run the button pressers
       leftButtonPress.setPosition(gamepad1.left_trigger);
-      rightButtonPress.setPosition(gamepad1.right_trigger);
+      rightButtonPress.setPosition(1-gamepad1.right_trigger);
 
 
 
       telemetry.update();
+      Thread.sleep(10);
     }
   }
 }

@@ -51,9 +51,9 @@ public class Shooter {
 
         //sending power to motors
         left.setMaxSpeed(100000);
-        left.setPower(-power);
+        left.setPower(power);
         right.setMaxSpeed(100000);
-        right.setPower(power);
+        right.setPower(-power);
     }
 
     /**
@@ -73,9 +73,9 @@ public class Shooter {
 
         //set motors to rpm based on ticks per second
         left.setMaxSpeed(tps);
-        left.setPower(-1);
+        left.setPower(1);
         right.setMaxSpeed(tps);
-        right.setPower(1);
+        right.setPower(-1);
     }
 
     ///Method to run the motors x rotations for 11364

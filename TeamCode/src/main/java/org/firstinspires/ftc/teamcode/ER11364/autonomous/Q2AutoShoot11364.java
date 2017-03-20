@@ -49,7 +49,7 @@ import org.firstinspires.ftc.teamcode.ER7373.mechanics.ServoM;
  *
  */
 @Autonomous(name = "11364 Auto Shoot", group = "11364")
-//@Disabled
+@Disabled
 public class Q2AutoShoot11364 extends LinearOpMode {
 
   //create all motor variables for the drive train

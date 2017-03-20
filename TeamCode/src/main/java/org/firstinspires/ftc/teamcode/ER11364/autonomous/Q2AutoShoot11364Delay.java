@@ -32,6 +32,7 @@ OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE. */
 package org.firstinspires.ftc.teamcode.ER11364.autonomous;
 
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.Servo;
@@ -49,7 +50,7 @@ import org.firstinspires.ftc.teamcode.ER7373.mechanics.ServoM;
  *
  */
 @Autonomous(name = "11364 Auto Shoot Delay", group = "11364")
-//@Disabled
+@Disabled
 public class Q2AutoShoot11364Delay extends LinearOpMode {
 
   //create all motor variables for the drive train

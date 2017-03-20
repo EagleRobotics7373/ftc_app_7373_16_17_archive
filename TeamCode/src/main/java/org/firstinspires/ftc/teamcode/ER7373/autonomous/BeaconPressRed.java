@@ -49,7 +49,7 @@ import org.firstinspires.ftc.teamcode.ER7373.sensors.MRRange;
 
 @Autonomous(name="BeaconPressRed7373", group="Auto 7373")
 //@Disabled
-public class BeaconPressLeft extends LinearOpMode {
+public class BeaconPressRed extends LinearOpMode {
 
 	/* Declare OpMode members. */
 	private ElapsedTime runtime = new ElapsedTime();

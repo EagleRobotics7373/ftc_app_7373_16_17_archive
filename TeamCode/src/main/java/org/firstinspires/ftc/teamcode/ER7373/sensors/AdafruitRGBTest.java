@@ -43,7 +43,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  * Demonstrates empty OpMode
  */
 @Autonomous(name = "Concept: AdafruitTest", group = "Concept")
-//@Disabled
+@Disabled
 public class AdafruitRGBTest extends OpMode {
   private ElapsedTime runtime = new ElapsedTime();
 

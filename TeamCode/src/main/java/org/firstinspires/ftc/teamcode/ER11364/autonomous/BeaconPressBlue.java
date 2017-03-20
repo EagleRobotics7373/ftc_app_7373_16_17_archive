@@ -34,6 +34,7 @@ package org.firstinspires.ftc.teamcode.ER11364.autonomous;
 
 import com.qualcomm.hardware.modernrobotics.ModernRoboticsI2cRangeSensor;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.hardware.DeviceInterfaceModule;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -45,7 +46,7 @@ import org.firstinspires.ftc.teamcode.ER7373.sensors.MRRange;
 
 
 @Autonomous(name="BeaconPressBlue11364", group="Auto 11364")
-//@Disabled
+@Disabled
 public class BeaconPressBlue extends LinearOpMode {
 
 	/* Declare OpMode members. */
